@@ -1,0 +1,268 @@
+/* The KHE site header: anatomy, sizes and states. Every colour, border, radius,
+   font family, width and weight is a --khe-header-* custom property; an app sets
+   its palette on .site-header (and on a standalone .language-switcher, if it has
+   one). The defaults are khe.ee's dark teal. Loads no fonts. */
+
+/* The defaults sit on the header and on a switcher outside one, not on the switcher
+   inside, so values an app sets on .site-header reach it. */
+:where(.site-header, .language-switcher:not(.site-header *)) {
+  --khe-header-font: 'Inter', system-ui, sans-serif;
+  --khe-header-title-font: var(--khe-header-font);
+  --khe-header-max-width: 1180px;
+  --khe-header-z: 60;
+  --khe-header-bg: rgba(7, 9, 9, 0.86);
+  --khe-header-blur: 18px;
+  --khe-header-border: rgba(255, 255, 255, 0.07);
+  --khe-header-text: #f5f7f6;
+  --khe-header-text-muted: #7f8a86;
+  --khe-header-focus: rgba(94, 234, 212, 0.3);
+
+  --khe-header-brand-weight: 600;
+  --khe-header-brand-radius: 8px;
+  --khe-header-brand-border: rgba(94, 234, 212, 0.3);
+  --khe-header-brand-border-hover: rgba(94, 234, 212, 0.48);
+  --khe-header-brand-bg: rgba(255, 255, 255, 0.025);
+  --khe-header-brand-shadow: 0 16px 38px rgba(0, 0, 0, 0.24);
+  --khe-header-suffix: #fb4b57;
+
+  --khe-header-divider: transparent;
+  --khe-header-divider-space: 0;
+  --khe-header-kicker-weight: 600;
+  --khe-header-kicker-tracking: 0;
+  /* At 520px and below; an app whose kicker is a control keeps it with `block`. */
+  --khe-header-kicker-narrow-display: none;
+  --khe-header-title-weight: 600;
+
+  --khe-header-switcher-radius: 8px;
+  --khe-header-switcher-border: rgba(255, 255, 255, 0.045);
+  --khe-header-switcher-bg: rgba(255, 255, 255, 0.018);
+  --khe-header-button-radius: 6px;
+  --khe-header-button-weight: 600;
+  --khe-header-button-tracking: 0;
+  --khe-header-button-pressed-text: var(--khe-header-text);
+  --khe-header-button-pressed-bg: rgba(94, 234, 212, 0.07);
+  --khe-header-button-pressed-border: rgba(94, 234, 212, 0.18);
+}
+
+/* A page's own element reset may not reach the header; this one has no specificity. */
+:where(.site-header, .site-header *, .site-header *::before, .site-header *::after) {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--khe-header-z);
+  border-bottom: 1px solid var(--khe-header-border);
+  background: var(--khe-header-bg);
+  -webkit-backdrop-filter: blur(var(--khe-header-blur));
+  backdrop-filter: blur(var(--khe-header-blur));
+  color: var(--khe-header-text);
+  font-family: var(--khe-header-font);
+  line-height: normal;
+}
+
+/* Over a page laid out with position: fixed, which starts below --host-h. The page's
+   script sets --host-h to the measured height; this is the height until then. */
+.site-header--fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+}
+
+html:has(.site-header--fixed) {
+  --host-h: calc(3.65rem + 1px);
+}
+
+.site-header__inner {
+  width: min(var(--khe-header-max-width), 100%);
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 auto;
+  padding: 0.45rem max(1rem, env(safe-area-inset-right)) 0.45rem max(1rem, env(safe-area-inset-left));
+}
+
+.site-header__brand {
+  flex-shrink: 0;
+  min-width: 3.35rem;
+  height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.025em;
+  padding: 0 0.55rem;
+  border: 1px solid var(--khe-header-brand-border);
+  border-radius: var(--khe-header-brand-radius);
+  background: var(--khe-header-brand-bg);
+  box-shadow: var(--khe-header-brand-shadow);
+  color: var(--khe-header-text);
+  font-size: 0.85rem;
+  font-weight: var(--khe-header-brand-weight);
+  letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color 0.16s, transform 0.16s, color 0.16s;
+}
+
+.site-header__brand:active {
+  transform: scale(0.96);
+  transition-duration: 0.1s;
+}
+
+.brand-mark__suffix {
+  display: inline-block;
+  color: var(--khe-header-suffix);
+  font-size: 0.7em;
+  font-weight: var(--khe-header-brand-weight);
+  line-height: 1;
+  transform: translateY(0.22em);
+}
+
+.site-header__context {
+  min-width: 0;
+  display: grid;
+  gap: 0.16rem;
+  padding-left: var(--khe-header-divider-space);
+  border-left: 1px solid var(--khe-header-divider);
+  color: var(--khe-header-text);
+  text-decoration: none;
+}
+
+.site-header__context > span {
+  overflow: hidden;
+  color: var(--khe-header-text-muted);
+  font-size: 0.62rem;
+  font-weight: var(--khe-header-kicker-weight);
+  letter-spacing: var(--khe-header-kicker-tracking);
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.site-header__context > strong {
+  overflow: hidden;
+  color: var(--khe-header-text);
+  font-family: var(--khe-header-title-font);
+  font-size: 0.9rem;
+  font-weight: var(--khe-header-title-weight);
+  letter-spacing: 0;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-header__actions {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+}
+
+.language-switcher {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 0.08rem;
+  padding: 0.12rem;
+  border: 1px solid var(--khe-header-switcher-border);
+  border-radius: var(--khe-header-switcher-radius);
+  background: var(--khe-header-switcher-bg);
+}
+
+.language-switcher button {
+  position: relative;
+  min-width: 2.25rem;
+  min-height: 2rem;
+  border: 1px solid transparent;
+  border-radius: var(--khe-header-button-radius);
+  background: transparent;
+  color: var(--khe-header-text-muted);
+  cursor: pointer;
+  font: var(--khe-header-button-weight) 0.66rem/1 var(--khe-header-font);
+  letter-spacing: var(--khe-header-button-tracking);
+  text-transform: uppercase;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s ease-out;
+}
+
+/* The pill stays compact; the hit area reaches 44px, growing outward only so
+   neither button takes taps from the other. */
+.language-switcher button::after {
+  content: '';
+  position: absolute;
+  inset: -6px 0;
+}
+
+.language-switcher button:first-child::after { left: -8px; }
+.language-switcher button:last-child::after { right: -8px; }
+
+.language-switcher button:active {
+  transform: scale(0.94);
+}
+
+.language-switcher button[aria-pressed="true"] {
+  border-color: var(--khe-header-button-pressed-border);
+  background: var(--khe-header-button-pressed-bg);
+  color: var(--khe-header-button-pressed-text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-header__brand:hover {
+    transform: translateY(-1px);
+    border-color: var(--khe-header-brand-border-hover);
+  }
+
+  .language-switcher button:hover {
+    color: var(--khe-header-text);
+  }
+
+  .language-switcher button[aria-pressed="true"]:hover {
+    color: var(--khe-header-button-pressed-text);
+  }
+}
+
+.site-header__brand:focus-visible,
+.site-header__context:focus-visible,
+.language-switcher button:focus-visible {
+  outline: 2px solid var(--khe-header-focus);
+  outline-offset: 2px;
+}
+
+.site-header__brand:focus-visible,
+.site-header__context:focus-visible {
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .site-header__inner {
+    min-height: 3.35rem;
+    gap: 0.58rem;
+    padding: 0.3rem max(0.75rem, env(safe-area-inset-right)) 0.3rem max(0.75rem, env(safe-area-inset-left));
+  }
+
+  /* Narrower, not lower: the mark stays a 44px target. */
+  .site-header__brand {
+    min-width: 3.05rem;
+    font-size: 0.8rem;
+  }
+
+  .site-header__context > span {
+    display: var(--khe-header-kicker-narrow-display);
+  }
+
+  .site-header__context > strong {
+    font-size: 0.82rem;
+  }
+
+  html:has(.site-header--fixed) {
+    --host-h: calc(3.35rem + 1px);
+  }
+}

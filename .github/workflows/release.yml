@@ -1,0 +1,75 @@
+name: Release
+
+# A pushed tag v<version> publishes that version of @khelias/ui to npmjs through
+# trusted publishing: no token, provenance added by npm (docs/adr/002).
+on:
+  push:
+    tags: ['v*']
+
+permissions: {}
+
+# Not named like the CI group: concurrency groups ignore case, and ci.yml runs inside this one.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+
+      - name: Tag matches the package version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Tag $TAG does not match package.json version $version"
+            exit 1
+          fi
+
+      # Trusted publishing needs npm 11.5.1 or later.
+      - name: npm is new enough
+        run: |
+          current="$(npm --version)"
+          if [ "$(printf '%s\n' 11.5.1 "$current" | sort -V | head -1)" != 11.5.1 ]; then
+            echo "::error::npm $current is older than 11.5.1"
+            exit 1
+          fi
+
+      # No install scripts in the job that can mint a publish credential. npm refuses
+      # a prerelease without a dist-tag, and latest must stay a release.
+      - name: Publish
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          npm ci --ignore-scripts
+          case "$TAG" in
+            *-*) npm publish --tag next ;;
+            *) npm publish ;;
+          esac

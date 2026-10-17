@@ -1,0 +1,57 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "timezone": "Europe/Tallinn",
+  "schedule": ["every weekend"],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 5,
+  "pinDigests": true,
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "description": "Major updates need manual review",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "labels": ["dependencies", "breaking"]
+    },
+    {
+      "description": "Automerge npm patch updates for stable packages",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": ">= 1.0.0",
+      "automerge": true
+    },
+    {
+      "description": "Automerge npm minor updates for stable packages",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies", "dependencies"],
+      "matchUpdateTypes": ["minor"],
+      "matchCurrentVersion": ">= 1.0.0",
+      "automerge": true
+    },
+    {
+      "description": "Automerge 0.x patch updates, devDependencies only. The two rules above require >= 1.0.0, which silently excluded every pre-1.0 package and left green PRs sitting open for weeks. Pre-1.0 patch bumps can still break, so runtime dependencies stay manual; dev tooling that breaks fails loudly in CI.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": "< 1.0.0",
+      "automerge": true
+    },
+    {
+      "description": "Automerge GitHub Actions non-major updates",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge digest and pin updates",
+      "matchUpdateTypes": ["digest", "pin"],
+      "automerge": true
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  }
+}

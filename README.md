@@ -5,11 +5,13 @@ The shared site header of the KHE apps, published as
 mark, an optional kicker over a page title, and an ET/EN language switcher.
 
 [khe.ee](https://khe.ee), [KHE Games](https://games.khe.ee) and the other
-KHE apps are separate repos on separate stacks, each with its own palette.
+KHE apps are separate repos on separate stacks that share one family
+chrome
+([estate ADR-015](https://github.com/khelias/khe-architecture/blob/main/decisions/015-family-design-layer.md)).
 They used to build this header four times, and fixes reached one copy at a
-time. Now the anatomy, sizes and states live here, and each app sets its
-colours through CSS custom properties and moves to a new release when it
-chooses
+time. Now the anatomy, sizes and states live here, and each app sets the
+family colours through CSS custom properties and moves to a new release
+when it chooses
 ([estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md)).
 
 ## Install

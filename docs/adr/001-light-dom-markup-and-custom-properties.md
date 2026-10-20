@@ -1,7 +1,7 @@
 # ADR-001: The header is light-DOM markup from two renderers, styled through custom properties
 
 - **Status:** Accepted (2026-10-17)
-- **Related:** [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md)
+- **Related:** [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md), [estate ADR-015](https://github.com/khelias/khe-architecture/blob/main/decisions/015-family-design-layer.md)
 
 ## Context
 

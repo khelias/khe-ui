@@ -64,7 +64,7 @@ The class names are shared with khe-trips' `DESIGN.md` and khe-sites'
 Every colour, border, radius, font family, width and weight is a
 `--khe-header-*` property, and so is whether the kicker shows at 520px and
 below (`--khe-header-kicker-narrow-display`, for an app whose kicker is a
-control). The defaults (khe.ee's dark teal, weights 600)
+control). The defaults (khe.ee's former dark teal, weights 600)
 sit on `:where(.site-header, .language-switcher:not(.site-header *))`, so
 they cost no specificity and a value an app sets on `.site-header` reaches
 the switcher inside it. Apps set their palette on `.site-header` (and on a
@@ -74,6 +74,12 @@ puts it inside a padded container makes it full-bleed itself. Kicker and
 inactive-button contrast stay at 4.5:1 or more against the defaults (a
 test reads them from the CSS); a new property needs a default and is used
 through `var()` only.
+
+The package carries the anatomy; its defaults are not the KHE family's
+values. Each consumer sets the family values from khe-sites' `DESIGN.md` on
+`.site-header`
+([estate ADR-015](https://github.com/khelias/khe-architecture/blob/main/decisions/015-family-design-layer.md)).
+A release whose defaults are the family values is a follow-up.
 
 The decisions behind this shape: [docs/adr/001](docs/adr/001-light-dom-markup-and-custom-properties.md).
 

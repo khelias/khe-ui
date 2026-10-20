@@ -3,7 +3,8 @@ import { StrictMode, act, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { SiteHeader, type SiteHeaderProps } from '../src/react.js';
+import { SiteHeader, type SiteHeaderProps, useThemeOverride } from '../src/react.js';
+import { setSystem } from './dom.js';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -34,8 +35,14 @@ const button = (root: HTMLElement, code: string) => root.querySelector<HTMLButto
 
 afterEach(() => {
   unmount?.();
+  unmount = undefined;
   container?.remove();
+  window.localStorage.clear();
+  document.documentElement.removeAttribute('data-theme');
+  setSystem('light');
 });
+
+const themeButton = (root: HTMLElement) => root.querySelector<HTMLButtonElement>('button.site-header__theme')!;
 
 describe('SiteHeader', () => {
   it('calls onLocaleChange with the code, and not for the active locale', () => {
@@ -102,6 +109,51 @@ describe('SiteHeader', () => {
     expect(part('switcher').matches('div.language-switcher')).toBe(true);
     expect(part('et').matches('button[data-lang-option="et"]')).toBe(true);
     expect(button(root, 'en').hasAttribute('data-part')).toBe(false);
+  });
+});
+
+describe('SiteHeader theme toggle', () => {
+  it('presses the toggle while dark shows and calls onToggle once per click', () => {
+    const onToggle = vi.fn();
+    const root = mount(<SiteHeader {...props} themeToggle={{ label: 'Dark theme', dark: true, onToggle }} />);
+    expect(themeButton(root).getAttribute('aria-pressed')).toBe('true');
+    expect(themeButton(root).getAttribute('aria-label')).toBe('Dark theme');
+    act(() => themeButton(root).click());
+    expect(onToggle).toHaveBeenCalledTimes(1);
+    act(() => themeButton(root).click());
+    expect(onToggle).toHaveBeenCalledTimes(2);
+  });
+
+  it('renders the toggle after the actions and before the switcher', () => {
+    const html = renderToStaticMarkup(
+      <SiteHeader {...props} actions={<button type="button" className="add">+</button>} themeToggle={{ label: 'T', dark: false, onToggle: () => {} }} />,
+    );
+    expect(html).toMatch(/<button type="button" class="add">\+<\/button><button class="site-header__theme"[^>]*aria-pressed="false">.*<\/button><div class="language-switcher"/);
+  });
+
+  it('wires the toggle to the stored override through useThemeOverride', () => {
+    window.localStorage.setItem('khe-test-theme', 'dark');
+    function App() {
+      const { dark, toggle } = useThemeOverride('khe-test-theme');
+      return <SiteHeader {...props} themeToggle={{ label: 'Dark theme', dark, onToggle: toggle }} />;
+    }
+    const root = mount(
+      <StrictMode>
+        <App />
+      </StrictMode>,
+    );
+    expect(themeButton(root).getAttribute('aria-pressed')).toBe('true');
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    act(() => themeButton(root).click());
+    expect(themeButton(root).getAttribute('aria-pressed')).toBe('false');
+    expect(window.localStorage.getItem('khe-test-theme')).toBeNull();
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
+    act(() => setSystem('dark'));
+    expect(themeButton(root).getAttribute('aria-pressed')).toBe('true');
+    act(() => themeButton(root).click());
+    expect(window.localStorage.getItem('khe-test-theme')).toBe('light');
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(themeButton(root).getAttribute('aria-pressed')).toBe('false');
   });
 });
 

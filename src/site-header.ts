@@ -1,29 +1,21 @@
-import { type Pairs, type SiteHeaderBaseOptions, prepare } from './core.js';
+import { type SiteHeaderBaseOptions, prepareHeader } from './core.js';
+import { escapeHtml, iconHtml, indented, tag } from './html.js';
 
 export type { Attrs, SiteHeaderContext, SiteHeaderLocale, SiteHeaderPartAttrs } from './core.js';
+export { escapeHtml } from './html.js';
 
 export interface SiteHeaderOptions<Code extends string = string> extends SiteHeaderBaseOptions<string, Code> {
   /** Put in front of every line, e.g. the indent of the line the header replaces. */
   readonly indent?: string;
 }
 
-const ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;' };
-
-/** Escapes text and attribute values the way React does, so both renderers agree. */
-export function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, (char) => ESCAPES[char] ?? char);
-}
-
-function tag(name: string, pairs: Pairs = []): string {
-  return `<${name}${pairs.map(([attr, value]) => ` ${attr}="${escapeHtml(value)}"`).join('')}>`;
-}
-
 /**
  * The KHE site header as an HTML string, for pages built without a framework.
- * It holds no behaviour: the page wires the `data-lang-option` buttons itself.
+ * It holds no behaviour: the page wires the `data-lang-option` buttons itself, and
+ * the theme toggle through `wireThemeToggle` from `@khelias/ui/theme`.
  */
 export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions<Code>): string {
-  const { headerClass, brand, context, switcher, buttons } = prepare(options);
+  const { headerClass, brand, context, theme, switcher, buttons } = prepareHeader(options);
   const lines = [
     tag('header', [['class', headerClass]]),
     '  <div class="site-header__inner">',
@@ -39,6 +31,7 @@ export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions
         ]
       : []),
     '    <div class="site-header__actions">',
+    ...(theme ? [`      ${tag('button', theme.attrs)}`, ...theme.icons.map((icon) => `        ${iconHtml(icon)}`), '      </button>'] : []),
     `      ${tag('div', switcher)}`,
     ...buttons.map((button) => `        ${tag('button', button.attrs)}${escapeHtml(button.label)}</button>`),
     '      </div>',
@@ -46,7 +39,5 @@ export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions
     '  </div>',
     '</header>',
   ];
-  const indent = options.indent ?? '';
-  if (!/^[ \t]*$/.test(indent)) throw new TypeError('site-header: indent may hold only spaces and tabs');
-  return lines.map((line) => indent + line).join('\n');
+  return indented('site-header', lines, options.indent);
 }

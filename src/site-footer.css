@@ -1,0 +1,73 @@
+/* The KHE site footer: anatomy only. Every colour, font, size and weight is a
+   --khe-footer-* custom property; an app sets its values on .site-footer and
+   places the footer itself (margins, padding, position on the page). The
+   defaults match the header's. Loads no fonts. */
+
+:where(.site-footer) {
+  --khe-footer-font: 'Inter', system-ui, sans-serif;
+  --khe-footer-size: 0.75rem;
+  --khe-footer-weight: 400;
+  --khe-footer-text: #7f8a86;
+  --khe-footer-text-hover: #f5f7f6;
+  --khe-footer-focus: rgba(94, 234, 212, 0.3);
+  --khe-footer-icon-size: 0.875rem;
+}
+
+/* A page's own element reset may not reach the footer; this one has no specificity. */
+:where(.site-footer *, .site-footer *::before, .site-footer *::after) {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.site-footer {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  color: var(--khe-footer-text);
+  font-family: var(--khe-footer-font);
+  font-size: var(--khe-footer-size);
+  font-weight: var(--khe-footer-weight);
+  text-align: center;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-footer nav a {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: var(--khe-footer-text);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.site-footer__divider {
+  margin: 0 0.5rem;
+}
+
+.site-footer__icon {
+  flex-shrink: 0;
+  width: var(--khe-footer-icon-size);
+  height: var(--khe-footer-icon-size);
+  fill: currentColor;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-footer nav a:hover {
+    color: var(--khe-footer-text-hover);
+  }
+}
+
+.site-footer nav a:focus-visible {
+  outline: 2px solid var(--khe-footer-focus);
+  outline-offset: 2px;
+}

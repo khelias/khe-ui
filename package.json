@@ -1,7 +1,7 @@
 {
   "name": "@khelias/ui",
-  "version": "0.1.1",
-  "description": "The KHE site header: CSS custom properties, an HTML-string renderer and a React component.",
+  "version": "0.2.0",
+  "description": "The KHE site header with its theme toggle, and the site footer: CSS custom properties, HTML-string renderers, React components and a framework-free theme module.",
   "license": "MIT",
   "author": "Kaido Henrik Elias",
   "type": "module",
@@ -13,6 +13,8 @@
   "bugs": "https://github.com/khelias/khe-ui/issues",
   "keywords": [
     "header",
+    "footer",
+    "dark-mode",
     "css-custom-properties",
     "react"
   ],
@@ -21,9 +23,18 @@
   ],
   "exports": {
     "./site-header.css": "./dist/site-header.css",
+    "./site-footer.css": "./dist/site-footer.css",
     "./site-header": {
       "types": "./dist/site-header.d.ts",
       "default": "./dist/site-header.js"
+    },
+    "./site-footer": {
+      "types": "./dist/site-footer.d.ts",
+      "default": "./dist/site-footer.js"
+    },
+    "./theme": {
+      "types": "./dist/theme.d.ts",
+      "default": "./dist/theme.js"
     },
     "./react": {
       "types": "./dist/react.d.ts",
@@ -35,7 +46,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && cp src/site-header.css dist/site-header.css",
+    "build": "tsc -p tsconfig.build.json && cp src/site-header.css src/site-footer.css dist/",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "check": "npm run -s typecheck && npm run -s test && npm run -s build && node scripts/check-pack.mjs",

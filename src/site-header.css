@@ -1,7 +1,8 @@
 /* The KHE site header: anatomy, sizes and states. Every colour, border, radius,
    font family, width and weight is a --khe-header-* custom property; an app sets
    its palette on .site-header (and on a standalone .language-switcher, if it has
-   one). The defaults are khe.ee's dark teal. Loads no fonts. */
+   one). The defaults are khe.ee's dark teal. Loads no fonts. The only :root
+   selectors pick the theme toggle's icon. */
 
 /* The defaults sit on the header and on a switcher outside one, not on the switcher
    inside, so values an app sets on .site-header reach it. */
@@ -166,6 +167,75 @@ html:has(.site-header--fixed) {
   margin-left: auto;
 }
 
+/* As tall as the switcher pill (a 2rem button, 0.12rem padding and a 1px border
+   on each side), and square. */
+.site-header__theme {
+  position: relative;
+  flex-shrink: 0;
+  width: calc(2.24rem + 2px);
+  height: calc(2.24rem + 2px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--khe-header-switcher-border);
+  border-radius: var(--khe-header-switcher-radius);
+  background: var(--khe-header-switcher-bg);
+  color: var(--khe-header-text-muted);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: color 0.15s, transform 0.1s ease-out;
+}
+
+/* A 44px hit area that grows up, down and left only: the switcher's first button
+   reaches 8px to its left, and the two areas must not meet. */
+.site-header__theme::after {
+  content: '';
+  position: absolute;
+  top: calc((100% - 2.75rem) / 2);
+  bottom: calc((100% - 2.75rem) / 2);
+  left: calc(100% - 2.75rem);
+  right: 0;
+}
+
+.site-header__theme:active {
+  transform: scale(0.94);
+}
+
+.site-header__theme svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The icon shows the theme a press leads to. It follows <html data-theme>, else the
+   system setting, so it is right before any script runs. */
+.site-header__theme-sun {
+  display: none;
+}
+
+:root[data-theme="dark"] .site-header__theme-sun {
+  display: block;
+}
+
+:root[data-theme="dark"] .site-header__theme-moon {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site-header__theme-sun {
+    display: block;
+  }
+
+  :root:not([data-theme="light"]) .site-header__theme-moon {
+    display: none;
+  }
+}
+
 .language-switcher {
   display: inline-flex;
   flex-shrink: 0;
@@ -224,6 +294,7 @@ html:has(.site-header--fixed) {
     color: var(--khe-header-text);
   }
 
+  .site-header__theme:hover,
   .language-switcher button[aria-pressed="true"]:hover {
     color: var(--khe-header-button-pressed-text);
   }
@@ -231,6 +302,7 @@ html:has(.site-header--fixed) {
 
 .site-header__brand:focus-visible,
 .site-header__context:focus-visible,
+.site-header__theme:focus-visible,
 .language-switcher button:focus-visible {
   outline: 2px solid var(--khe-header-focus);
   outline-offset: 2px;

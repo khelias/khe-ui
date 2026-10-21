@@ -57,7 +57,8 @@ dependencies; `react` ^19 is an optional peer dependency.
   entry point
 - `test/` - parity of the two renderers, the markup contract, escaping,
   attrs, React behaviour, the theme rules, the rooms module, CSS tokens,
-  specificity and contrast
+  specificity and contrast; `test/selectors.ts` holds the narrow rule's
+  selector, which the CSS test and the React test share
 
 ## Markup contract
 
@@ -71,17 +72,18 @@ the tests and the consumers' checks:
 - `a.site-header__brand.brand-mark` with `href`, `aria-label`, holding
   `<span>KHE</span><span class="brand-mark__suffix">.ee</span>`
 - with `rooms`: `button.site-header__rooms` with `type="button"`,
-  `popovertarget="khe-rooms"` (React writes `popoverTarget`) and
-  `data-khe-room` (the current room), holding
-  `span.site-header__rooms-name`, `span.site-header__sr` (", " and the
-  list's name) and `svg.site-header__rooms-chevron`; then
+  `popovertarget="khe-rooms"` (React writes `popoverTarget`),
+  `data-khe-room` (the current room) and `aria-label` (the room's name, ", "
+  and the list's name), holding `span.site-header__rooms-name` and
+  `svg.site-header__rooms-chevron`; then
   `nav.site-header__rooms-menu` with `id="khe-rooms"`, `popover=""` and
-  `aria-label` ("Toad" / "Rooms"), holding a `ul` with one `li` per room in
-  `ROOMS` order, each an `a.site-header__room` with `data-khe-room`, `href`
-  (the room's address with `?lang=`, or `currentHref` as given, then
-  `data-khe-room-own=""`) and, for the current room, `aria-current="true"`;
-  it holds `span.site-header__room-dot` (`aria-hidden="true"`),
-  `span.site-header__room-name`, `span.site-header__sr` (", "),
+  `aria-label` ("Toad" / "Rooms"), holding a `ul` with one
+  `li.site-header__rooms-item` per room in `ROOMS` order, each an
+  `a.site-header__room` with `data-khe-room`, `href` (the room's address
+  with `?lang=`, or `currentHref` as given, then `data-khe-room-own=""`),
+  `aria-label` (the name, ", " and the note) and, for the current room,
+  `aria-current="true"`; it holds `span.site-header__room-dot`
+  (`aria-hidden="true"`), `span.site-header__room-name`,
   `span.site-header__room-note`, and for the current room
   `svg.site-header__room-check`. No rooms parts without `rooms`
 - `span.site-header__slash` with `aria-hidden="true"` holding `/`, only with
@@ -113,8 +115,9 @@ The footer, `footer.site-footer`:
   the same rules as the header's
 
 The class names are shared with khe-trips' `DESIGN.md` and khe-sites'
-`check.mjs`: renaming one breaks them. `site-header__sr` is the package's
-own visually hidden class.
+`check.mjs`: renaming one breaks them. The rooms button and links are
+named by `aria-label`, not visually hidden text: Chrome puts a space
+between flex and grid items, so hidden text would read "Kodu , Avaleht".
 
 ## Tokens
 
@@ -144,8 +147,12 @@ The menu opens in the top layer at `position: fixed`, just below the header
 (the heights `--host-h` defaults to, or `--host-h` itself with `fixed`), at
 the inner row's start, or under the button where anchor positioning works.
 Without the Popover API the button, the list and the slash are hidden. When
-the row is short of room the title ellipsizes and at 360px and below hides,
-then the room name ellipsizes; the mark, toggle and switcher never shrink.
+the row is short of room the title ellipsizes and at 360px and below hides
+(at 520px and below when the React `actions` render anything), then the
+room name ellipsizes; the mark, toggle and switcher never shrink. The list's
+`li` rules have two classes, so a page's `li` rules, scoped by one class or
+none, do not reach them; its `ul` rule has one class and wins over a page's
+element rules.
 
 The footer's colours, font, sizes and weight are `--khe-footer-*`
 properties with defaults on `:where(.site-footer)` matching the header's

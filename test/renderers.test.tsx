@@ -78,17 +78,18 @@ describe('renderSiteHeader', () => {
     );
     expect(html).toContain('<span>KHE</span><span class="brand-mark__suffix">.ee</span>');
     expect(html).toContain(
-      '<button class="site-header__rooms" type="button" popovertarget="khe-rooms" data-khe-room="server" data-i18n-aria="headerRooms">' +
-        '<span class="site-header__rooms-name">Koduserver</span><span class="site-header__sr">, Toad</span>' +
+      '<button class="site-header__rooms" type="button" popovertarget="khe-rooms" data-khe-room="server" aria-label="Koduserver, Toad" data-i18n-aria="headerRooms">' +
+        '<span class="site-header__rooms-name">Koduserver</span>' +
         '<svg class="site-header__rooms-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"></path></svg></button>',
     );
     expect(html).toContain('<nav class="site-header__rooms-menu" id="khe-rooms" popover="" aria-label="Toad">');
     expect(html).toContain(
-      '<li><a class="site-header__room" data-khe-room="home" href="https://khe.ee/?lang=et"><span class="site-header__room-dot" aria-hidden="true"></span>' +
-        '<span class="site-header__room-name">Kodu</span><span class="site-header__sr">, </span><span class="site-header__room-note">Avaleht</span></a></li>',
+      '<li class="site-header__rooms-item"><a class="site-header__room" data-khe-room="home" href="https://khe.ee/?lang=et" aria-label="Kodu, Avaleht">' +
+        '<span class="site-header__room-dot" aria-hidden="true"></span>' +
+        '<span class="site-header__room-name">Kodu</span><span class="site-header__room-note">Avaleht</span></a></li>',
     );
     expect(html).toContain(
-      '<a class="site-header__room" data-khe-room="server" href="https://khe.ee/architecture/?lang=et" aria-current="true">',
+      '<a class="site-header__room" data-khe-room="server" href="https://khe.ee/architecture/?lang=et" aria-label="Koduserver, Kuidas see kõik töötab" aria-current="true">',
     );
     expect(html).toContain('<span class="site-header__slash" aria-hidden="true">/</span>');
     expect(html).toContain('<a class="site-header__title" href="/architecture/" data-i18n="headerDecision" lang="en">Otsus</a>');
@@ -113,8 +114,8 @@ describe('renderSiteHeader', () => {
       'strong.site-header__title',
       'div.site-header__actions',
     ]);
-    expect(doc.querySelectorAll('nav.site-header__rooms-menu > ul > li > a.site-header__room')).toHaveLength(5);
-    expect(doc.querySelector('.site-header__rooms > .site-header__rooms-name + .site-header__sr + svg.site-header__rooms-chevron')).not.toBeNull();
+    expect(doc.querySelectorAll('nav.site-header__rooms-menu > ul > li.site-header__rooms-item > a.site-header__room')).toHaveLength(5);
+    expect(doc.querySelector('.site-header__rooms > .site-header__rooms-name:first-child + svg.site-header__rooms-chevron:last-child')).not.toBeNull();
     expect(doc.querySelectorAll('.site-header__actions > div.language-switcher[role="group"] > button[type="button"]')).toHaveLength(2);
     expect(doc.querySelector('.site-header__theme')).toBeNull();
   });
@@ -184,13 +185,23 @@ describe('renderSiteHeader', () => {
     ]);
     expect(items.filter((item) => item.hasAttribute('aria-current')).map((item) => item.getAttribute('data-khe-room'))).toEqual(['games']);
     expect(items.filter((item) => item.querySelector('svg.site-header__room-check')).map((item) => item.getAttribute('data-khe-room'))).toEqual(['games']);
-    expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Mängud, Toad');
-    expect(items[0]!.textContent).toBe('Kodu, Avaleht');
+    expect(doc.querySelector('.site-header__rooms')!.getAttribute('aria-label')).toBe('Mängud, Toad');
+    expect(items.map((item) => item.getAttribute('aria-label'))).toEqual([
+      'Kodu, Avaleht',
+      'Mängud, Õppemängud ja AI Seiklus',
+      'Koduautomaatika, Maja juhtimine, demo',
+      'Reisipäevik, Reisid kaardil, demo',
+      'Koduserver, Kuidas see kõik töötab',
+    ]);
+    // The labels carry the commas; the text holds the visible words only.
+    expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Mängud');
+    expect(items[0]!.textContent).toBe('KoduAvaleht');
   });
 
   it('names the rooms in the rooms locale, not the switcher', () => {
     const doc = parse(renderSiteHeader({ ...base, rooms: { current: 'house', locale: 'en' } }));
-    expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Home automation, Rooms');
+    expect(doc.querySelector('.site-header__rooms')!.getAttribute('aria-label')).toBe('Home automation, Rooms');
+    expect(doc.querySelector('a.site-header__room')!.getAttribute('aria-label')).toBe('Home, The front page');
     expect(doc.querySelector('.site-header__rooms-menu')!.getAttribute('aria-label')).toBe('Rooms');
     expect(doc.querySelector('a.site-header__room')!.getAttribute('href')).toBe('https://khe.ee/?lang=en');
   });
@@ -231,6 +242,10 @@ describe('renderSiteHeader', () => {
     expect(() => renderSiteHeader({ ...base, themeToggle, attrs: { theme: { 'aria-pressed': 'true' } } })).toThrow(/repeats aria-pressed/);
     expect(() => renderSiteHeader({ ...base, themeToggle, attrs: { theme: { 'aria-label': 'x' } } })).toThrow(/repeats aria-label/);
     expect(() => renderSiteHeader({ ...base, themeToggle, attrs: { theme: { onclick: 'x' } } })).toThrow(/only data-\*/);
+  });
+
+  it('refuses an aria-label on the rooms button, which names itself', () => {
+    expect(() => renderSiteHeader({ ...base, rooms: games, attrs: { rooms: { 'aria-label': 'x' } } })).toThrow(/repeats aria-label/);
   });
 
   it('refuses an unknown active locale and a javascript: link', () => {

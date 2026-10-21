@@ -26,13 +26,13 @@ export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions
     ...(rooms
       ? [
           `    ${tag('button', rooms.button)}<span class="site-header__rooms-name">${escapeHtml(rooms.name)}</span>` +
-            `<span class="site-header__sr">${escapeHtml(rooms.label)}</span>${iconHtml(rooms.chevron)}</button>`,
+            `${iconHtml(rooms.chevron)}</button>`,
           `    ${tag('nav', rooms.menu)}`,
           '      <ul>',
           ...rooms.items.map(
             (item) =>
-              `        <li>${tag('a', item.attrs)}<span class="site-header__room-dot" aria-hidden="true"></span>` +
-              `<span class="site-header__room-name">${escapeHtml(item.name)}</span><span class="site-header__sr">, </span>` +
+              `        <li class="site-header__rooms-item">${tag('a', item.attrs)}<span class="site-header__room-dot" aria-hidden="true"></span>` +
+              `<span class="site-header__room-name">${escapeHtml(item.name)}</span>` +
               `<span class="site-header__room-note">${escapeHtml(item.note)}</span>${item.check ? iconHtml(item.check) : ''}</a></li>`,
           ),
           '      </ul>',

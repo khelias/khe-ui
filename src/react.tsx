@@ -66,17 +66,15 @@ export function SiteHeader<Code extends string = string>(options: SiteHeaderProp
           <>
             <button {...props(rooms.button)}>
               <span className="site-header__rooms-name">{rooms.name}</span>
-              <span className="site-header__sr">{rooms.label}</span>
               <IconSvg icon={rooms.chevron} />
             </button>
             <nav {...props(rooms.menu)}>
               <ul>
                 {rooms.items.map((item) => (
-                  <li key={item.id}>
+                  <li key={item.id} className="site-header__rooms-item">
                     <a {...props(item.attrs)}>
                       <span className="site-header__room-dot" aria-hidden="true" />
                       <span className="site-header__room-name">{item.name}</span>
-                      <span className="site-header__sr">, </span>
                       <span className="site-header__room-note">{item.note}</span>
                       {item.check ? <IconSvg icon={item.check} /> : null}
                     </a>

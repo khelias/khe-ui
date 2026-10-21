@@ -1,4 +1,4 @@
-import { ROOMS, ROOMS_LABEL, type RoomId, type RoomLocale, checkedRoomLocale, hrefWithLang, roomById, roomsButtonLabel } from './rooms.js';
+import { ROOMS, ROOMS_LABEL, type RoomId, type RoomLocale, checkedRoomLocale, hrefWithLang, roomById, roomItemName, roomsButtonName } from './rooms.js';
 
 /** Extra attributes for one part of a component, rendered after the part's own. */
 export type Attrs = Readonly<Record<string, string>>;
@@ -141,11 +141,11 @@ function prepareRooms(rooms: SiteHeaderRooms, attrs: Attrs | undefined) {
         ['type', 'button'],
         ['popovertarget', ROOMS_MENU_ID],
         ['data-khe-room', current.id],
+        ['aria-label', roomsButtonName(current, locale)],
       ],
       attrs,
     ),
     name: current.name[locale],
-    label: roomsButtonLabel(locale),
     chevron: CHEVRON,
     menu: [
       ['class', 'site-header__rooms-menu'],
@@ -164,6 +164,7 @@ function prepareRooms(rooms: SiteHeaderRooms, attrs: Attrs | undefined) {
           ['data-khe-room', room.id],
           ['href', href],
           ...(own === undefined ? [] : [['data-khe-room-own', ''] as const]),
+          ['aria-label', roomItemName(room, locale)],
           ...(isCurrent ? [['aria-current', 'true'] as const] : []),
         ] as Pairs,
         name: room.name[locale],

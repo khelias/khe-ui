@@ -50,16 +50,18 @@ describe('setRoomsLocale', () => {
   it('rewrites the button, both labels, every name, note and href', () => {
     const doc = header();
     setRoomsLocale(doc, 'et');
-    expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Reisipäevik, Toad');
+    expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Reisipäevik');
+    expect(doc.querySelector('.site-header__rooms')!.getAttribute('aria-label')).toBe('Reisipäevik, Toad');
     expect(doc.querySelector('.site-header__rooms-menu')!.getAttribute('aria-label')).toBe('Toad');
     const items = [...doc.querySelectorAll('a.site-header__room')];
     expect(items.map((item) => item.querySelector('.site-header__room-name')!.textContent)).toEqual(ROOMS.map((room) => room.name.et));
     expect(items.map((item) => item.querySelector('.site-header__room-note')!.textContent)).toEqual(ROOMS.map((room) => room.note.et));
+    expect(items.map((item) => item.getAttribute('aria-label'))).toEqual(ROOMS.map((room) => `${room.name.et}, ${room.note.et}`));
     expect(items.map((item) => item.getAttribute('href'))).toEqual(ROOM_IDS.map((id) => roomHref(id, 'et')));
     expect(doc.querySelector('[aria-current="true"]')!.getAttribute('data-khe-room')).toBe('trips');
     setRoomsLocale(doc, 'en');
-    expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Travel journal, Rooms');
-    expect(items[0]!.textContent).toBe('Home, The front page');
+    expect(doc.querySelector('.site-header__rooms')!.getAttribute('aria-label')).toBe('Travel journal, Rooms');
+    expect(items[0]!.getAttribute('aria-label')).toBe('Home, The front page');
     expect(items[0]!.getAttribute('href')).toBe('https://khe.ee/?lang=en');
   });
 
@@ -99,7 +101,8 @@ describe('setRoomsLocale', () => {
     const doc = header();
     doc.querySelector('a[data-khe-room="server"]')!.setAttribute('data-khe-room', 'attic');
     expect(() => setRoomsLocale(doc, 'et')).toThrow(/unknown room attic/);
-    expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Travel journal, Rooms');
+    expect(doc.querySelector('.site-header__rooms')!.getAttribute('aria-label')).toBe('Travel journal, Rooms');
+    expect(doc.querySelector('a[data-khe-room="home"]')!.getAttribute('aria-label')).toBe('Home, The front page');
     expect(doc.querySelector('a[data-khe-room="home"]')!.getAttribute('href')).toBe('https://khe.ee/?lang=en');
   });
 

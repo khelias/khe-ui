@@ -4,7 +4,8 @@ import { createRoot } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SiteHeader, type SiteHeaderProps, useThemeOverride } from '../src/react.js';
-import { setSystem } from './dom.js';
+import { parse, setSystem } from './dom.js';
+import { APP_ACTION } from './selectors.js';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -151,6 +152,14 @@ describe('SiteHeader theme toggle', () => {
     expect(onToggle).toHaveBeenCalledTimes(1);
     act(() => themeButton(root).click());
     expect(onToggle).toHaveBeenCalledTimes(2);
+  });
+
+  // happy-dom matches :has() with a combinator inside on any header, so this checks its argument.
+  it('finds an action for the narrow rule that hides the title, and not the toggle or the switcher', () => {
+    const found = (element: React.ReactElement) => [...parse(renderToStaticMarkup(element)).querySelectorAll(APP_ACTION)].map((node) => node.className);
+    const themeToggle = { label: 'T', dark: false, onToggle: () => {} };
+    expect(found(<SiteHeader {...props} themeToggle={themeToggle} actions={<button type="button" className="add">+</button>} />)).toEqual(['add']);
+    expect(found(<SiteHeader {...props} themeToggle={themeToggle} />)).toEqual([]);
   });
 
   it('renders the toggle after the actions and before the switcher', () => {

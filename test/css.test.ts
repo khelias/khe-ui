@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ROOM_IDS } from '../src/rooms.js';
+import { ACTION_HIDES_TITLE } from './selectors.js';
 
 const read = (name: string) => readFileSync(new URL(`../src/${name}`, import.meta.url), 'utf8');
 const css = read('site-header.css');
@@ -182,6 +183,30 @@ describe('site-header.css', () => {
       '.site-header__rooms-menu',
       '.site-header__slash',
     ]);
+    expect(rule!.body.trim()).toBe('display: none;');
+  });
+
+  // khe-sites' privacy pages put a dash before every li in main.
+  it('keeps a page\'s own li rules, element or class scoped, out of the list', () => {
+    const all = rules(css);
+    const item = all.find((rule) => rule.selector === '.site-header__rooms-menu .site-header__rooms-item');
+    expect(specificity(item!.selector)).toBeGreaterThan(specificity('.prose main li'));
+    expect(item!.body).toMatch(/display: block;[\s\S]*margin: 0;[\s\S]*padding: 0;/);
+    const marks = all.find((rule) => rule.selector.startsWith('.site-header__rooms-menu .site-header__rooms-item::before'));
+    expect(marks!.selector.split(',').map((selector) => selector.trim())).toEqual([
+      '.site-header__rooms-menu .site-header__rooms-item::before',
+      '.site-header__rooms-menu .site-header__rooms-item::after',
+    ]);
+    expect(specificity('.site-header__rooms-menu .site-header__rooms-item::before')).toBeGreaterThan(specificity('.privacy-page main li::before'));
+    expect(marks!.body.trim()).toBe('content: none;');
+    const list = all.find((rule) => rule.selector === '.site-header__rooms-menu ul');
+    expect(list!.body).toMatch(/margin: 0;[\s\S]*padding: 0;[\s\S]*list-style: none;/);
+  });
+
+  it('hides the title and the slash beside an app\'s action at 520px and below', () => {
+    const block = /@media \(max-width: 520px\) \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? '';
+    const rule = rules(block).find((candidate) => candidate.selector.includes(':has(.site-header__actions'));
+    expect(rule!.selector).toBe(ACTION_HIDES_TITLE);
     expect(rule!.body.trim()).toBe('display: none;');
   });
 

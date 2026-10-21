@@ -151,19 +151,9 @@ html:has(.site-header--fixed) {
   transform: translateY(0.22em);
 }
 
-.site-header__sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 /* The room's name and the app's title share a type. When the row is short of room,
-   the title gives way first (it shrinks a thousand times faster), then the room name;
-   the chevron stays. */
+   the title gives way first (it shrinks a thousand times faster, and hides at 360px,
+   or at 520px beside an app's action), then the room name; the chevron stays. */
 .site-header__rooms,
 .site-header__title {
   min-width: 0;
@@ -253,7 +243,22 @@ html:has(.site-header--fixed) {
 .site-header__rooms-menu ul {
   display: grid;
   gap: 0.1rem;
+  margin: 0;
+  padding: 0;
   list-style: none;
+}
+
+/* Two classes, so a page's own li rules (a margin, a dash or a marker before each
+   item), scoped by a class or not, do not reach the rooms. */
+.site-header__rooms-menu .site-header__rooms-item {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.site-header__rooms-menu .site-header__rooms-item::before,
+.site-header__rooms-menu .site-header__rooms-item::after {
+  content: none;
 }
 
 .site-header__room {
@@ -531,6 +536,11 @@ html:has(.site-header--fixed) {
 
   html:has(.site-header--fixed) {
     --host-h: calc(3.35rem + 1px);
+  }
+
+  /* An app's own action takes the title's room first. */
+  .site-header:has(.site-header__actions > :not(.site-header__theme, .language-switcher)) :is(.site-header__title, .site-header__slash) {
+    display: none;
   }
 }
 

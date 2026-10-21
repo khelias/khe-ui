@@ -44,7 +44,7 @@ export const ROOMS: readonly Room[] = [
   },
 ];
 
-/** The list's accessible name, also read after the button's room name. */
+/** The list's accessible name, also the end of the button's, after the room name. */
 export const ROOMS_LABEL: Readonly<Record<RoomLocale, string>> = { et: 'Toad', en: 'Rooms' };
 
 /** @internal Shared with the renderers; not part of the contract. */
@@ -60,9 +60,17 @@ export function roomById(id: string): Room {
   return room;
 }
 
-/** @internal The hidden text after the button's room name, so it reads "Games, Rooms". */
-export function roomsButtonLabel(locale: RoomLocale): string {
-  return `, ${ROOMS_LABEL[locale]}`;
+// Labels rather than visually hidden text: Chrome puts a space between the flex and grid
+// items of the button and the links, so hidden text would read "Games , Rooms".
+
+/** @internal The button's accessible name, e.g. "Games, Rooms". */
+export function roomsButtonName(room: Room, locale: RoomLocale): string {
+  return `${room.name[locale]}, ${ROOMS_LABEL[locale]}`;
+}
+
+/** @internal A room link's accessible name, e.g. "Home, The front page". */
+export function roomItemName(room: Room, locale: RoomLocale): string {
+  return `${room.name[locale]}, ${room.note[locale]}`;
 }
 
 /** @internal `room.href` with `lang`, for a room and locale already checked. */
@@ -77,7 +85,7 @@ export function roomHref(room: RoomId, locale: RoomLocale): string {
 
 /**
  * Rewrites a rendered rooms menu inside `root` to `locale`: the button's room name and
- * label, the list's label, every room's name and note, and every href but the one an
+ * label, the list's label, every room's name, note and label, and every href but the one an
  * app set itself (`data-khe-room-own`). For a page that switches language without
  * re-rendering the header.
  */
@@ -95,8 +103,7 @@ export function setRoomsLocale(root: ParentNode, locale: RoomLocale): void {
   for (const { button, room } of buttons) {
     const name = button.querySelector('.site-header__rooms-name');
     if (name) name.textContent = room.name[lang];
-    const sr = button.querySelector('.site-header__sr');
-    if (sr) sr.textContent = roomsButtonLabel(lang);
+    button.setAttribute('aria-label', roomsButtonName(room, lang));
   }
   for (const menu of root.querySelectorAll('.site-header__rooms-menu')) menu.setAttribute('aria-label', ROOMS_LABEL[lang]);
   for (const { item, room } of items) {
@@ -104,6 +111,7 @@ export function setRoomsLocale(root: ParentNode, locale: RoomLocale): void {
     if (name) name.textContent = room.name[lang];
     const note = item.querySelector('.site-header__room-note');
     if (note) note.textContent = room.note[lang];
+    item.setAttribute('aria-label', roomItemName(room, lang));
     if (!item.hasAttribute('data-khe-room-own')) item.setAttribute('href', hrefWithLang(room, lang));
   }
 }

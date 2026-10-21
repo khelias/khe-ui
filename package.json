@@ -1,6 +1,6 @@
 {
   "name": "@khelias/ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "The KHE site header with its rooms menu and theme toggle, and the site footer: CSS custom properties, HTML-string renderers, React components and framework-free theme and rooms modules.",
   "license": "MIT",
   "author": "Kaido Henrik Elias",

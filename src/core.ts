@@ -1,3 +1,5 @@
+import { ROOMS, ROOMS_LABEL, type RoomId, type RoomLocale, checkedRoomLocale, hrefWithLang, roomById, roomsButtonLabel } from './rooms.js';
+
 /** Extra attributes for one part of a component, rendered after the part's own. */
 export type Attrs = Readonly<Record<string, string>>;
 
@@ -45,11 +47,6 @@ function checkedHref(component: Component, where: string, href: string): string 
   return href;
 }
 
-/** Whether a kicker was given: something React renders as content, or a non-empty string. */
-function hasContent<T>(value: T): value is Exclude<T, undefined | null | boolean | ''> {
-  return value !== undefined && value !== null && typeof value !== 'boolean' && value !== '';
-}
-
 function icon(className: string, ...paths: string[]): Icon {
   return {
     attrs: [
@@ -69,6 +66,11 @@ const SUN = icon(
   'M12 3v2M12 19v2M3 12h2M19 12h2M5.64 5.64l1.41 1.41M16.95 16.95l1.41 1.41M5.64 18.36l1.41-1.41M16.95 7.05l1.41-1.41',
 );
 const MOON = icon('site-header__theme-moon', 'M20 14.5A8 8 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z');
+const CHEVRON = icon('site-header__rooms-chevron', 'M6 9l6 6 6-6');
+const CHECK = icon('site-header__room-check', 'M5 12.5l4.5 4.5L19 7');
+
+// One header per page, so the list's id is fixed.
+const ROOMS_MENU_ID = 'khe-rooms';
 
 export interface SiteHeaderLocale<Code extends string = string> {
   /** Goes into `data-lang-option`. */
@@ -80,28 +82,39 @@ export interface SiteHeaderLocale<Code extends string = string> {
 }
 
 export interface SiteHeaderContext<Node> {
-  readonly kicker?: Node;
+  /** The app's name, after the room and a slash. */
   readonly title: Node;
-  /** Makes the context a link. */
+  /** Makes the title a link. */
   readonly href?: string;
+}
+
+/** The rooms menu (estate ADR-018): the current room's button and the list of every room. */
+export interface SiteHeaderRooms {
+  readonly current: RoomId;
+  /** The language of the room names and notes, and the `lang` of their hrefs. */
+  readonly locale: RoomLocale;
+  /** Replaces the current room's href as given, e.g. the trip atlas's own root. */
+  readonly currentHref?: string;
 }
 
 export interface SiteHeaderPartAttrs {
   readonly brand?: Attrs;
-  readonly context?: Attrs;
-  readonly kicker?: Attrs;
+  /** The rooms button. */
+  readonly rooms?: Attrs;
   readonly title?: Attrs;
   readonly theme?: Attrs;
   readonly switcher?: Attrs;
 }
 
 /**
- * What both renderers take. `Node` is the type of kicker and title (a string, or a
+ * What both renderers take. `Node` is the type of the title (a string, or a
  * React node); `Code` narrows the locale codes to the app's own type, e.g. `'et' | 'en'`.
  */
 export interface SiteHeaderBaseOptions<Node, Code extends string = string> {
   /** The KHE.ee mark: where it leads and its accessible name. */
   readonly brand: { readonly href: string; readonly label: string };
+  /** Every page but the khe.ee landing has it. */
+  readonly rooms?: SiteHeaderRooms;
   readonly context?: SiteHeaderContext<Node>;
   /** A light/dark toggle in front of the switcher; `label` is its accessible name, e.g. `Dark theme`. */
   readonly themeToggle?: { readonly label: string };
@@ -114,7 +127,52 @@ export interface SiteHeaderBaseOptions<Node, Code extends string = string> {
   readonly attrs?: SiteHeaderPartAttrs;
 }
 
-const HEADER_PARTS = ['brand', 'context', 'kicker', 'title', 'theme', 'switcher'] as const;
+const HEADER_PARTS = ['brand', 'rooms', 'title', 'theme', 'switcher'] as const;
+
+function prepareRooms(rooms: SiteHeaderRooms, attrs: Attrs | undefined) {
+  const current = roomById(rooms.current);
+  const locale = checkedRoomLocale(rooms.locale);
+  return {
+    button: withAttrs(
+      'site-header',
+      'rooms',
+      [
+        ['class', 'site-header__rooms'],
+        ['type', 'button'],
+        ['popovertarget', ROOMS_MENU_ID],
+        ['data-khe-room', current.id],
+      ],
+      attrs,
+    ),
+    name: current.name[locale],
+    label: roomsButtonLabel(locale),
+    chevron: CHEVRON,
+    menu: [
+      ['class', 'site-header__rooms-menu'],
+      ['id', ROOMS_MENU_ID],
+      ['popover', ''],
+      ['aria-label', ROOMS_LABEL[locale]],
+    ] as Pairs,
+    items: ROOMS.map((room) => {
+      const isCurrent = room.id === current.id;
+      const own = isCurrent ? rooms.currentHref : undefined;
+      const href = own === undefined ? hrefWithLang(room, locale) : checkedHref('site-header', 'rooms.currentHref', own);
+      return {
+        id: room.id,
+        attrs: [
+          ['class', 'site-header__room'],
+          ['data-khe-room', room.id],
+          ['href', href],
+          ...(own === undefined ? [] : [['data-khe-room-own', ''] as const]),
+          ...(isCurrent ? [['aria-current', 'true'] as const] : []),
+        ] as Pairs,
+        name: room.name[locale],
+        note: room.note[locale],
+        check: isCurrent ? CHECK : undefined,
+      };
+    }),
+  };
+}
 
 /**
  * The checked parts of the header, in contract order, that both renderers only lay
@@ -122,7 +180,7 @@ const HEADER_PARTS = ['brand', 'context', 'kicker', 'title', 'theme', 'switcher'
  * a broken header, attrs of a toggle not rendered included.
  */
 export function prepareHeader<Node, Code extends string>(options: SiteHeaderBaseOptions<Node, Code>, dark = false) {
-  const { brand, context, themeToggle, locales, activeLocale, languageLabel, fixed, attrs = {} } = options;
+  const { brand, rooms, context, themeToggle, locales, activeLocale, languageLabel, fixed, attrs = {} } = options;
   if (locales.length === 0) throw new TypeError('site-header: locales is empty');
   if (new Set(locales.map((locale) => locale.code)).size !== locales.length) {
     throw new TypeError('site-header: two locales have the same code');
@@ -132,12 +190,11 @@ export function prepareHeader<Node, Code extends string>(options: SiteHeaderBase
   }
   checkedParts('site-header', attrs, HEADER_PARTS);
   if (attrs.theme && !themeToggle) throw new TypeError('site-header: attrs.theme without themeToggle');
+  if (attrs.rooms && !rooms) throw new TypeError('site-header: attrs.rooms without rooms');
   const part = (name: string, own: Pairs, extra: Attrs | undefined) => withAttrs('site-header', name, own, extra);
-  const contextHref: Pairs = context?.href === undefined ? [] : [['href', checkedHref('site-header', 'context', context.href)]];
+  const titleHref: Pairs = context?.href === undefined ? [] : [['href', checkedHref('site-header', 'context', context.href)]];
   // Checked even without a context, so a bad name fails on every page, not only some.
-  const contextAttrs = part('context', [['class', 'site-header__context'], ...contextHref], attrs.context);
-  const kicker = part('kicker', [], attrs.kicker);
-  const title = part('title', [], attrs.title);
+  const title = part('title', [['class', 'site-header__title'], ...titleHref], attrs.title);
 
   return {
     headerClass: fixed ? 'site-header site-header--fixed' : 'site-header',
@@ -150,11 +207,13 @@ export function prepareHeader<Node, Code extends string>(options: SiteHeaderBase
       ],
       attrs.brand,
     ),
-    context: context && {
-      tag: contextHref.length ? ('a' as const) : ('div' as const),
-      attrs: contextAttrs,
-      kicker: hasContent(context.kicker) ? { node: context.kicker, attrs: kicker } : undefined,
-      title: { node: context.title, attrs: title },
+    rooms: rooms && prepareRooms(rooms, attrs.rooms),
+    // Only between a room and a title; hidden from assistive technology, which reads both anyway.
+    slash: rooms && context ? ([['class', 'site-header__slash'], ['aria-hidden', 'true']] as Pairs) : undefined,
+    title: context && {
+      tag: titleHref.length ? ('a' as const) : ('strong' as const),
+      attrs: title,
+      node: context.title,
     },
     theme: themeToggle && {
       attrs: part(

@@ -1,7 +1,7 @@
 {
   "name": "@khelias/ui",
-  "version": "0.2.0",
-  "description": "The KHE site header with its theme toggle, and the site footer: CSS custom properties, HTML-string renderers, React components and a framework-free theme module.",
+  "version": "0.3.0",
+  "description": "The KHE site header with its rooms menu and theme toggle, and the site footer: CSS custom properties, HTML-string renderers, React components and framework-free theme and rooms modules.",
   "license": "MIT",
   "author": "Kaido Henrik Elias",
   "type": "module",
@@ -35,6 +35,10 @@
     "./theme": {
       "types": "./dist/theme.d.ts",
       "default": "./dist/theme.js"
+    },
+    "./rooms": {
+      "types": "./dist/rooms.d.ts",
+      "default": "./dist/rooms.js"
     },
     "./react": {
       "types": "./dist/react.d.ts",

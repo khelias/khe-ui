@@ -1,6 +1,7 @@
 # ADR-003: The theme toggle is a header part with a framework-free behaviour module; the footer is a second component
 
-- **Status:** Accepted (2026-10-20)
+- **Status:** Superseded (2026-10-20)
+- **Superseded by:** [ADR-004](004-rooms-menu-as-a-native-popover.md)
 - **Related:** [estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md), [ADR-001](001-light-dom-markup-and-custom-properties.md)
 
 ## Context

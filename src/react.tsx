@@ -17,6 +17,7 @@ export type {
   SiteHeaderContext,
   SiteHeaderLocale,
   SiteHeaderPartAttrs,
+  SiteHeaderRooms,
 } from './core.js';
 
 export interface SiteHeaderProps<Code extends string = string> extends SiteHeaderBaseOptions<ReactNode, Code> {
@@ -30,7 +31,10 @@ export interface SiteHeaderProps<Code extends string = string> extends SiteHeade
 
 export type SiteFooterProps = SiteFooterBaseOptions<ReactNode>;
 
-const props = (pairs: Pairs) => Object.fromEntries(pairs.map(([name, value]) => [name === 'class' ? 'className' : name, value]));
+// HTML names React spells otherwise; React 19 warns on the lower-case popovertarget.
+const REACT_NAMES: Readonly<Record<string, string>> = { class: 'className', popovertarget: 'popoverTarget' };
+
+const props = (pairs: Pairs) => Object.fromEntries(pairs.map(([name, value]) => [REACT_NAMES[name] ?? name, value]));
 
 function IconSvg({ icon }: { icon: Icon }) {
   return (
@@ -47,9 +51,9 @@ function IconSvg({ icon }: { icon: Icon }) {
  * and passes the active one back in; the same for the theme, see `useThemeOverride`.
  */
 export function SiteHeader<Code extends string = string>(options: SiteHeaderProps<Code>) {
-  const { headerClass, brand, context, theme, switcher, buttons } = prepareHeader(options, options.themeToggle?.dark === true);
+  const { headerClass, brand, rooms, slash, title, theme, switcher, buttons } = prepareHeader(options, options.themeToggle?.dark === true);
   const { actions, themeToggle, activeLocale, onLocaleChange } = options;
-  const Context = context?.tag;
+  const Title = title?.tag;
 
   return (
     <header className={headerClass}>
@@ -58,12 +62,32 @@ export function SiteHeader<Code extends string = string>(options: SiteHeaderProp
           <span>KHE</span>
           <span className="brand-mark__suffix">.ee</span>
         </a>
-        {context && Context ? (
-          <Context {...props(context.attrs)}>
-            {context.kicker ? <span {...props(context.kicker.attrs)}>{context.kicker.node}</span> : null}
-            <strong {...props(context.title.attrs)}>{context.title.node}</strong>
-          </Context>
+        {rooms ? (
+          <>
+            <button {...props(rooms.button)}>
+              <span className="site-header__rooms-name">{rooms.name}</span>
+              <span className="site-header__sr">{rooms.label}</span>
+              <IconSvg icon={rooms.chevron} />
+            </button>
+            <nav {...props(rooms.menu)}>
+              <ul>
+                {rooms.items.map((item) => (
+                  <li key={item.id}>
+                    <a {...props(item.attrs)}>
+                      <span className="site-header__room-dot" aria-hidden="true" />
+                      <span className="site-header__room-name">{item.name}</span>
+                      <span className="site-header__sr">, </span>
+                      <span className="site-header__room-note">{item.note}</span>
+                      {item.check ? <IconSvg icon={item.check} /> : null}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </>
         ) : null}
+        {slash ? <span {...props(slash)}>/</span> : null}
+        {title && Title ? <Title {...props(title.attrs)}>{title.node}</Title> : null}
         <div className="site-header__actions">
           {actions}
           {theme ? (

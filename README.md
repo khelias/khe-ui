@@ -2,14 +2,15 @@
 
 The shared site header and site footer of the KHE apps, published as
 [`@khelias/ui`](https://www.npmjs.com/package/@khelias/ui). The header has
-the KHE.ee mark, an optional kicker over a page title, an optional
-light/dark theme toggle and an ET/EN language switcher; the footer has the
-page links with the GitHub and LinkedIn marks and a line of text.
+the KHE.ee mark, a rooms menu naming the room you are in and listing the
+others, the app's name after a slash, an optional light/dark theme toggle
+and an ET/EN language switcher; the footer has the page links with the
+GitHub and LinkedIn marks and a line of text.
 
 [khe.ee](https://khe.ee), [KHE Games](https://games.khe.ee) and the other
 KHE apps are separate repos on separate stacks that share one family
 chrome
-([estate ADR-015](https://github.com/khelias/khe-architecture/blob/main/decisions/015-family-design-layer.md)).
+([estate ADR-018](https://github.com/khelias/khe-architecture/blob/main/decisions/018-rooms-menu-in-the-shared-header.md)).
 They used to build the header four times and the footer three times, and fixes reached one copy at a
 time. Now the anatomy, sizes and states live here, and each app sets the
 family colours through CSS custom properties and moves to a new release
@@ -31,15 +32,19 @@ renderer.
 import { renderSiteHeader } from '@khelias/ui/site-header';
 
 const html = renderSiteHeader({
-  brand: { href: '/', label: 'KHE home' },
-  context: { kicker: 'KHE Games', title: 'Games' },
+  brand: { href: 'https://khe.ee/', label: 'KHE home' },
+  rooms: { current: 'games', locale: 'en' },
+  context: { title: 'Smart Games' },
   locales: [{ code: 'et', label: 'ET' }, { code: 'en', label: 'EN' }],
   activeLocale: 'en',
   languageLabel: 'Language',
 });
 ```
 
-The page wires the `data-lang-option` buttons itself.
+The page wires the `data-lang-option` buttons itself. The rooms menu needs no
+script: it is a native popover. A page that switches language without
+re-rendering calls `setRoomsLocale(document, locale)` from
+`@khelias/ui/rooms`. Leave `rooms` out on the khe.ee front page.
 
 ## React
 
@@ -48,8 +53,9 @@ import '@khelias/ui/site-header.css';
 import { SiteHeader } from '@khelias/ui/react';
 
 <SiteHeader
-  brand={{ href: '/', label: 'KHE home' }}
-  context={{ title: 'Trips' }}
+  brand={{ href: 'https://khe.ee/', label: 'KHE home' }}
+  rooms={{ current: 'trips', locale, currentHref: '/' }}
+  context={{ title: 'All trips' }}
   locales={[{ code: 'et', label: 'ET' }, { code: 'en', label: 'EN' }]}
   activeLocale={locale}
   languageLabel={t('language')}

@@ -12,6 +12,8 @@ const expected = [
   'dist/html.js',
   'dist/react.d.ts',
   'dist/react.js',
+  'dist/rooms.d.ts',
+  'dist/rooms.js',
   'dist/site-footer.css',
   'dist/site-footer.d.ts',
   'dist/site-footer.js',
@@ -36,10 +38,12 @@ if (missing.length || extra.length) {
   process.exit(1);
 }
 
-// khe-sites serves dist/theme.js as it is, with no bundler to resolve an import.
-// Comments survive the build, so a bare /import/ would trip on prose.
-const theme = readFileSync(new URL('../dist/theme.js', import.meta.url), 'utf8');
-if (/^\s*import\b/m.test(theme) || /\bimport\s*\(/.test(theme) || /\bfrom\s*['"]/.test(theme)) {
-  console.error('check-pack: dist/theme.js imports something; it must stand alone');
-  process.exit(1);
+// khe-sites serves dist/theme.js and dist/rooms.js as they are, with no bundler to
+// resolve an import. Comments survive the build, so a bare /import/ would trip on prose.
+for (const name of ['theme.js', 'rooms.js']) {
+  const source = readFileSync(new URL(`../dist/${name}`, import.meta.url), 'utf8');
+  if (/^\s*import\b/m.test(source) || /\bimport\s*\(/.test(source) || /\bfrom\s*['"]/.test(source)) {
+    console.error(`check-pack: dist/${name} imports something; it must stand alone`);
+    process.exit(1);
+  }
 }

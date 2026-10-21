@@ -1,8 +1,9 @@
 /* The KHE site header: anatomy, sizes and states. Every colour, border, radius,
    font family, width and weight is a --khe-header-* custom property; an app sets
    its palette on .site-header (and on a standalone .language-switcher, if it has
-   one). The defaults are khe.ee's dark teal. Loads no fonts. The only :root
-   selectors pick the theme toggle's icon. */
+   one). The defaults are khe.ee's dark teal, except the five room dots, which are
+   the family's room accents (estate ADR-018). Loads no fonts. The :root selectors
+   pick the theme toggle's icon and the dark dot values. */
 
 /* The defaults sit on the header and on a switcher outside one, not on the switcher
    inside, so values an app sets on .site-header reach it. */
@@ -26,13 +27,18 @@
   --khe-header-brand-shadow: 0 16px 38px rgba(0, 0, 0, 0.24);
   --khe-header-suffix: #fb4b57;
 
-  --khe-header-divider: transparent;
-  --khe-header-divider-space: 0;
-  --khe-header-kicker-weight: 600;
-  --khe-header-kicker-tracking: 0;
-  /* At 520px and below; an app whose kicker is a control keeps it with `block`. */
-  --khe-header-kicker-narrow-display: none;
   --khe-header-title-weight: 600;
+
+  --khe-header-menu-bg: #0b0e0e;
+  --khe-header-menu-border: rgba(255, 255, 255, 0.1);
+  --khe-header-menu-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
+  --khe-header-menu-current-bg: rgba(94, 234, 212, 0.07);
+  /* The room accents of khe-sites' DESIGN.md, light here, dark below. */
+  --khe-header-room-home: #d7263d;
+  --khe-header-room-games: #a16207;
+  --khe-header-room-house: #1f5fa8;
+  --khe-header-room-trips: #b75a3a;
+  --khe-header-room-server: #0f766e;
 
   --khe-header-switcher-radius: 8px;
   --khe-header-switcher-border: rgba(255, 255, 255, 0.045);
@@ -43,6 +49,26 @@
   --khe-header-button-pressed-text: var(--khe-header-text);
   --khe-header-button-pressed-bg: rgba(94, 234, 212, 0.07);
   --khe-header-button-pressed-border: rgba(94, 234, 212, 0.18);
+}
+
+/* The dark room dots follow <html data-theme>, else the system setting, like the
+   toggle's icon. Wrapped whole in :where(), so a value an app sets on .site-header wins. */
+:where(:root[data-theme="dark"] .site-header) {
+  --khe-header-room-home: #fb4b57;
+  --khe-header-room-games: #f59e0b;
+  --khe-header-room-house: #6fe3ff;
+  --khe-header-room-trips: #d9764f;
+  --khe-header-room-server: #5eead4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme="light"]) .site-header) {
+    --khe-header-room-home: #fb4b57;
+    --khe-header-room-games: #f59e0b;
+    --khe-header-room-house: #6fe3ff;
+    --khe-header-room-trips: #d9764f;
+    --khe-header-room-server: #5eead4;
+  }
 }
 
 /* A page's own element reset may not reach the header; this one has no specificity. */
@@ -125,38 +151,184 @@ html:has(.site-header--fixed) {
   transform: translateY(0.22em);
 }
 
-.site-header__context {
-  min-width: 0;
-  display: grid;
-  gap: 0.16rem;
-  padding-left: var(--khe-header-divider-space);
-  border-left: 1px solid var(--khe-header-divider);
-  color: var(--khe-header-text);
-  text-decoration: none;
-}
-
-.site-header__context > span {
+.site-header__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
   overflow: hidden;
-  color: var(--khe-header-text-muted);
-  font-size: 0.62rem;
-  font-weight: var(--khe-header-kicker-weight);
-  letter-spacing: var(--khe-header-kicker-tracking);
-  line-height: 1;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 
-.site-header__context > strong {
-  overflow: hidden;
+/* The room's name and the app's title share a type. When the row is short of room,
+   the title gives way first (it shrinks a thousand times faster), then the room name;
+   the chevron stays. */
+.site-header__rooms,
+.site-header__title {
+  min-width: 0;
   color: var(--khe-header-text);
   font-family: var(--khe-header-title-font);
   font-size: 0.9rem;
   font-weight: var(--khe-header-title-weight);
   letter-spacing: 0;
   line-height: 1.05;
+}
+
+.site-header__rooms {
+  flex: 0 1 auto;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: -0.35rem;
+  padding: 0 0.35rem;
+  border: 0;
+  border-radius: var(--khe-header-button-radius);
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.site-header__rooms-name,
+.site-header__title {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.site-header__rooms-chevron {
+  flex-shrink: 0;
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--khe-header-text-muted);
+  transition: transform 0.16s;
+}
+
+.site-header__rooms:has(+ .site-header__rooms-menu:popover-open) .site-header__rooms-chevron {
+  transform: rotate(180deg);
+}
+
+.site-header__slash {
+  flex-shrink: 0;
+  color: var(--khe-header-text-muted);
+  font-size: 0.9rem;
+}
+
+/* Never a sliver: at its narrowest it is a letter and an ellipsis. */
+.site-header__title {
+  flex: 0 1000 auto;
+  min-width: 2.5rem;
+  text-decoration: none;
+}
+
+/* In the top layer, so the header's own stacking and overflow do not clip it. It opens
+   just below the header (whose heights --host-h defaults to) at the inner row's start;
+   100% is the viewport without its scrollbar, which 100vw would include. */
+.site-header__rooms-menu {
+  position: fixed;
+  inset: auto;
+  top: calc(3.65rem + 1px);
+  left: calc(max(0px, (100% - var(--khe-header-max-width)) / 2) + max(1rem, env(safe-area-inset-left)));
+  width: min(18rem, 100% - 2rem);
+  height: auto;
+  max-height: calc(100dvh - 3.65rem - 1px - 0.75rem);
+  margin: 0;
+  padding: 0.35rem;
+  overflow: auto;
+  border: 1px solid var(--khe-header-menu-border);
+  border-radius: var(--khe-header-brand-radius);
+  background: var(--khe-header-menu-bg);
+  box-shadow: var(--khe-header-menu-shadow);
+  color: var(--khe-header-text);
+  font-family: var(--khe-header-font);
+}
+
+.site-header--fixed .site-header__rooms-menu {
+  top: var(--host-h);
+  max-height: calc(100dvh - var(--host-h) - 0.75rem);
+}
+
+.site-header__rooms-menu ul {
+  display: grid;
+  gap: 0.1rem;
+  list-style: none;
+}
+
+.site-header__room {
+  min-height: 2.75rem;
+  display: grid;
+  grid-template: 'dot name check' auto 'dot note check' auto / auto 1fr auto;
+  align-items: center;
+  column-gap: 0.65rem;
+  row-gap: 0.12rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--khe-header-button-radius);
+  color: var(--khe-header-text);
+  text-decoration: none;
+}
+
+.site-header__room[aria-current="true"] {
+  background: var(--khe-header-menu-current-bg);
+}
+
+.site-header__room-dot {
+  grid-area: dot;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+}
+
+.site-header__room[data-khe-room="home"] > .site-header__room-dot { background: var(--khe-header-room-home); }
+.site-header__room[data-khe-room="games"] > .site-header__room-dot { background: var(--khe-header-room-games); }
+.site-header__room[data-khe-room="house"] > .site-header__room-dot { background: var(--khe-header-room-house); }
+.site-header__room[data-khe-room="trips"] > .site-header__room-dot { background: var(--khe-header-room-trips); }
+.site-header__room[data-khe-room="server"] > .site-header__room-dot { background: var(--khe-header-room-server); }
+
+.site-header__room-name {
+  grid-area: name;
+  font-size: 0.88rem;
+  font-weight: var(--khe-header-title-weight);
+  line-height: 1.2;
+}
+
+.site-header__room-note {
+  grid-area: note;
+  color: var(--khe-header-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.site-header__room-check {
+  grid-area: check;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Under the button rather than at the row's start, where the browser can anchor it;
+   below 521px the row's start is close enough and the list must not run off screen. */
+@supports (anchor-name: --a) {
+  @media (min-width: 521px) {
+    .site-header__rooms {
+      anchor-name: --khe-rooms;
+    }
+
+    .site-header__rooms-menu {
+      position-anchor: --khe-rooms;
+      left: anchor(left);
+    }
+  }
+}
+
+/* Without the Popover API the list would show inline: no button, slash or list, and the
+   mark still leads home. */
+@supports not selector(:popover-open) {
+  .site-header__rooms,
+  .site-header__rooms-menu,
+  .site-header__slash {
+    display: none;
+  }
 }
 
 .site-header__actions {
@@ -205,6 +377,11 @@ html:has(.site-header--fixed) {
 .site-header__theme svg {
   width: 1.05rem;
   height: 1.05rem;
+}
+
+.site-header__theme svg,
+.site-header__rooms-chevron,
+.site-header__room-check {
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -298,19 +475,33 @@ html:has(.site-header--fixed) {
   .language-switcher button[aria-pressed="true"]:hover {
     color: var(--khe-header-button-pressed-text);
   }
+
+  .site-header__rooms:hover .site-header__rooms-chevron {
+    color: var(--khe-header-text);
+  }
+
+  .site-header__room:hover {
+    background: var(--khe-header-menu-current-bg);
+  }
 }
 
 .site-header__brand:focus-visible,
-.site-header__context:focus-visible,
+.site-header__rooms:focus-visible,
+.site-header__title:focus-visible,
 .site-header__theme:focus-visible,
 .language-switcher button:focus-visible {
   outline: 2px solid var(--khe-header-focus);
   outline-offset: 2px;
 }
 
-.site-header__brand:focus-visible,
-.site-header__context:focus-visible {
+.site-header__brand:focus-visible {
   outline-offset: 3px;
+}
+
+/* Inside the list, whose overflow would clip a ring drawn outside the item. */
+.site-header__room:focus-visible {
+  outline: 2px solid var(--khe-header-focus);
+  outline-offset: -2px;
 }
 
 @media (max-width: 520px) {
@@ -326,15 +517,26 @@ html:has(.site-header--fixed) {
     font-size: 0.8rem;
   }
 
-  .site-header__context > span {
-    display: var(--khe-header-kicker-narrow-display);
+  .site-header__rooms,
+  .site-header__title,
+  .site-header__slash {
+    font-size: 0.82rem;
   }
 
-  .site-header__context > strong {
-    font-size: 0.82rem;
+  .site-header__rooms-menu {
+    top: calc(3.35rem + 1px);
+    left: max(0.75rem, env(safe-area-inset-left));
+    max-height: calc(100dvh - 3.35rem - 1px - 0.75rem);
   }
 
   html:has(.site-header--fixed) {
     --host-h: calc(3.35rem + 1px);
+  }
+}
+
+@media (max-width: 360px) {
+  .site-header__title,
+  .site-header__slash {
+    display: none;
   }
 }

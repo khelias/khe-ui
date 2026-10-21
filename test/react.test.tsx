@@ -70,16 +70,11 @@ describe('SiteHeader', () => {
     expect(button(root, 'en').getAttribute('aria-pressed')).toBe('false');
   });
 
-  it('renders actions before the switcher, and nodes as kicker and title', () => {
+  it('renders actions before the switcher, and a node as the title', () => {
     const html = renderToStaticMarkup(
-      <SiteHeader
-        {...props}
-        context={{ kicker: <button type="button">Home</button>, title: <em>Rome</em> }}
-        actions={<button type="button" className="add">+</button>}
-      />,
+      <SiteHeader {...props} context={{ title: <em>Rome</em> }} actions={<button type="button" className="add">+</button>} />,
     );
-    expect(html).toContain('<span><button type="button">Home</button></span><strong><em>Rome</em></strong>');
-    expect(renderToStaticMarkup(<SiteHeader {...props} context={{ kicker: true, title: 'T' }} />)).not.toContain('<span></span>');
+    expect(html).toContain('<strong class="site-header__title"><em>Rome</em></strong>');
     expect(html).toContain('<div class="site-header__actions"><button type="button" class="add">+</button><div class="language-switcher"');
   });
 
@@ -91,11 +86,11 @@ describe('SiteHeader', () => {
           { code: 'et', label: 'ET', attrs: { 'data-part': 'et' } },
           { code: 'en', label: 'EN' },
         ]}
-        context={{ kicker: 'K', title: 'T', href: '/x' }}
+        rooms={{ current: 'trips', locale: 'en' }}
+        context={{ title: 'T', href: '/x' }}
         attrs={{
           brand: { 'data-part': 'brand' },
-          context: { 'data-part': 'context' },
-          kicker: { 'data-part': 'kicker' },
+          rooms: { 'data-part': 'rooms' },
           title: { 'data-part': 'title' },
           switcher: { 'data-part': 'switcher' },
         }}
@@ -103,12 +98,46 @@ describe('SiteHeader', () => {
     );
     const part = (name: string) => root.querySelector(`[data-part="${name}"]`)!;
     expect(part('brand').matches('a.site-header__brand')).toBe(true);
-    expect(part('context').matches('a.site-header__context')).toBe(true);
-    expect(part('kicker').matches('.site-header__context > span')).toBe(true);
-    expect(part('title').matches('.site-header__context > strong')).toBe(true);
+    expect(part('rooms').matches('button.site-header__rooms')).toBe(true);
+    expect(part('title').matches('a.site-header__title[href="/x"]')).toBe(true);
     expect(part('switcher').matches('div.language-switcher')).toBe(true);
     expect(part('et').matches('button[data-lang-option="et"]')).toBe(true);
     expect(button(root, 'en').hasAttribute('data-part')).toBe(false);
+  });
+});
+
+describe('SiteHeader rooms menu', () => {
+  it('renders a native popover without a React warning', () => {
+    const error = vi.spyOn(console, 'error');
+    try {
+      const root = mount(
+        <StrictMode>
+          <SiteHeader {...props} rooms={{ current: 'trips', locale: 'en', currentHref: '/' }} />
+        </StrictMode>,
+      );
+      const rooms = root.querySelector('button.site-header__rooms')!;
+      expect(rooms.getAttribute('popovertarget')).toBe('khe-rooms');
+      expect(rooms.getAttribute('type')).toBe('button');
+      const menu = root.querySelector('nav.site-header__rooms-menu')!;
+      expect(menu.id).toBe('khe-rooms');
+      expect(menu.getAttribute('popover')).toBe('');
+      expect(menu.getAttribute('aria-label')).toBe('Rooms');
+      expect(error).not.toHaveBeenCalled();
+    } finally {
+      error.mockRestore();
+    }
+  });
+
+  it('marks and checks the current room only', () => {
+    const root = mount(<SiteHeader {...props} rooms={{ current: 'trips', locale: 'en', currentHref: '/' }} />);
+    const items = [...root.querySelectorAll('a.site-header__room')];
+    expect(items).toHaveLength(5);
+    const current = items.filter((item) => item.getAttribute('aria-current') === 'true');
+    expect(items.filter((item) => item.hasAttribute('aria-current'))).toEqual(current);
+    expect(current.map((item) => item.getAttribute('data-khe-room'))).toEqual(['trips']);
+    expect(items.filter((item) => item.querySelector('svg.site-header__room-check')).map((item) => item.getAttribute('data-khe-room'))).toEqual(['trips']);
+    expect(current[0]!.getAttribute('href')).toBe('/');
+    expect(current[0]!.hasAttribute('data-khe-room-own')).toBe(true);
   });
 });
 

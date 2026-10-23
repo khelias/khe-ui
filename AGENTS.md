@@ -3,26 +3,28 @@
 `@khelias/ui` on npmjs: the KHE site header with its rooms menu and theme
 toggle, and the site footer, each as CSS custom properties, an HTML-string
 renderer and a React component, plus framework-free theme and rooms
-modules; shared by khe-sites,
-khe-study, khe-ai-adventure and khe-trips. Shared UI packages between app repos are
+modules, and the `khe-design-lint` bin, the family design check; shared
+by khe-sites, khe-study, khe-ai-adventure and khe-trips. Shared UI packages between app repos are
 allowed by
 [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md):
 presentation only, released with semver, pinned in each app, and never
 automerged there.
 [Estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)
 puts the theme toggle, the theme rules and the footer here, and
-[estate ADR-018](https://github.com/khelias/khe-architecture/blob/main/decisions/018-rooms-menu-in-the-shared-header.md)
-the rooms menu, the room list and the room accents.
+[estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)
+the rooms menu, the room list, the room accents and the design check.
 
 npm, Node 24 (`.nvmrc`, `engine-strict`), TypeScript 7 compiled by plain
 `tsc`, Vitest with happy-dom for the tests that need a DOM. No runtime
-dependencies; `react` ^19 is an optional peer dependency.
+dependencies; `react` ^19 is an optional peer dependency. The bin runs on
+Node built-ins only ([docs/adr/005](docs/adr/005-design-check-as-a-node-bin.md)).
 
 ## Commands
 
 - `npm run check` - typecheck, tests, build, and `scripts/check-pack.mjs`,
-  which fails unless `npm pack` would ship exactly the expected files and
-  `dist/theme.js` and `dist/rooms.js` import nothing
+  which fails unless `npm pack` would ship exactly the expected files,
+  `dist/theme.js` and `dist/rooms.js` import nothing and
+  `dist/design-lint.js` starts with the node shebang
 - `npm test` - the tests only
 - `npm run build` - `dist/`: `tsc -p tsconfig.build.json` plus copies of
   `src/site-header.css` and `src/site-footer.css`; `prepack` runs it, so `npm pack` and `npm publish`
@@ -55,9 +57,17 @@ dependencies; `react` ^19 is an optional peer dependency.
   renderers only lay them out. Not an entry point
 - `src/html.ts` - escaping and tag helpers of the string renderers. Not an
   entry point
+- `src/design-lint.ts` - the `khe-design-lint` bin, node only; no browser
+  entry imports it and `exports` does not list it. Its parts are in
+  `src/design-lint/`: `rules.ts` (the matchers per rule and the family
+  colours copied from khe-sites' `DESIGN.md`), `scan.ts` (config, file
+  walk, comments and allow comments), `baseline.ts` (the baseline file and
+  the one at `HEAD`), `run.ts` (the CLI) and `tailwind-v3-hex.ts`
+  (generated from `tailwindcss@3.4.19`, never edited by hand)
 - `test/` - parity of the two renderers, the markup contract, escaping,
   attrs, React behaviour, the theme rules, the rooms module, CSS tokens,
-  specificity and contrast; `test/selectors.ts` holds the narrow rule's
+  specificity and contrast, and the design check on fixture trees and
+  temporary git repos; `test/selectors.ts` holds the narrow rule's
   selector, which the CSS test and the React test share
 
 ## Markup contract
@@ -164,11 +174,34 @@ The package carries the anatomy; apart from the room dots its defaults are
 not the KHE family's values. The dots are the room accents of khe-sites'
 `DESIGN.md` in both themes, which khe-sites' check compares; each consumer
 sets the other family values from `DESIGN.md` on `.site-header`
-([estate ADR-018](https://github.com/khelias/khe-architecture/blob/main/decisions/018-rooms-menu-in-the-shared-header.md)).
+([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)).
 
 The decisions behind this shape: [docs/adr/001](docs/adr/001-light-dom-markup-and-custom-properties.md)
 and, for the rooms menu, the theme toggle and the footer,
 [docs/adr/004](docs/adr/004-rooms-menu-as-a-native-popover.md).
+
+## The design check
+
+`khe-design-lint [--config <path>] [--root <dir>] [--write-baseline]`
+(estate ADR-021 point 8). The app's `khe-design-lint.json` has `include`
+globs, optional `exclude` globs and `content` globs, and the `baseline`
+path, relative to the config; globs are relative to the root (default the
+working directory). Test files, `node_modules`, `dist`, `output` and hidden
+directories are always out. The rules, counted per file and occurrence:
+`gradient`, `blur`, `shadow` (not `none` or a `0 0 0 Npx` ring), `radius`
+(over 12px, except 999px, 9999px and 50%), `palette` (Tailwind default
+palette classes and v3 hex values, not white, black or a family colour),
+`caps`, `tracking` (over 0.02em), `emoji` (pictographs, not arrows or
+©®™) and `dash` (an em dash outside comments). `content` globs lift
+`palette`, `emoji` and `dash`. A comment on the line,
+`design-lint-allow <rule>[, <rule>]: <reason>`, lifts the rules it names;
+without a reason it fails. The bare `shadow` class and `dash` are read
+without comments; every other rule reads comments too, so `uppercase` in a
+comment counts. The check fails on a count above the baseline (it prints
+that rule's lines in the file), on a count below it (stale: rewrite with
+`--write-baseline`), and on a rule total raised over the baseline at
+`HEAD`, unless `HEAD` has none or one of another lint version. A rule
+change is a minor release.
 
 ## Release
 
@@ -199,8 +232,8 @@ same change.
    business logic (estate ADR-014). The stored theme choice and its DOM
    functions are presentation
    ([estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)),
-   and so is the room list
-   ([estate ADR-018](https://github.com/khelias/khe-architecture/blob/main/decisions/018-rooms-menu-in-the-shared-header.md)).
+   and so are the room list and the design check
+   ([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)).
 2. **No runtime dependencies.** React stays an optional peer dependency.
 3. **A public repo and a public package.** Nothing identifying, no house
    data.

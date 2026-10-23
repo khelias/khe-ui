@@ -35,10 +35,10 @@
   --khe-header-menu-current-bg: rgba(94, 234, 212, 0.07);
   /* The room accents of khe-sites' DESIGN.md, light here, dark below. */
   --khe-header-room-home: #d7263d;
-  --khe-header-room-games: #a16207;
+  --khe-header-room-games: #8a5a12;
   --khe-header-room-house: #1f5fa8;
   --khe-header-room-trips: #b75a3a;
-  --khe-header-room-server: #0f766e;
+  --khe-header-room-server: #246b5f;
 
   --khe-header-switcher-radius: 8px;
   --khe-header-switcher-border: rgba(255, 255, 255, 0.045);
@@ -55,19 +55,19 @@
    toggle's icon. Wrapped whole in :where(), so a value an app sets on .site-header wins. */
 :where(:root[data-theme="dark"] .site-header) {
   --khe-header-room-home: #fb4b57;
-  --khe-header-room-games: #f59e0b;
+  --khe-header-room-games: #d9a441;
   --khe-header-room-house: #6fe3ff;
   --khe-header-room-trips: #d9764f;
-  --khe-header-room-server: #5eead4;
+  --khe-header-room-server: #7fc8b8;
 }
 
 @media (prefers-color-scheme: dark) {
   :where(:root:not([data-theme="light"]) .site-header) {
     --khe-header-room-home: #fb4b57;
-    --khe-header-room-games: #f59e0b;
+    --khe-header-room-games: #d9a441;
     --khe-header-room-house: #6fe3ff;
     --khe-header-room-trips: #d9764f;
-    --khe-header-room-server: #5eead4;
+    --khe-header-room-server: #7fc8b8;
   }
 }
 

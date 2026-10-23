@@ -10,7 +10,7 @@ GitHub and LinkedIn marks and a line of text.
 [khe.ee](https://khe.ee), [KHE Games](https://games.khe.ee) and the other
 KHE apps are separate repos on separate stacks that share one family
 chrome
-([estate ADR-018](https://github.com/khelias/khe-architecture/blob/main/decisions/018-rooms-menu-in-the-shared-header.md)).
+([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)).
 They used to build the header four times and the footer three times, and fixes reached one copy at a
 time. Now the anatomy, sizes and states live here, and each app sets the
 family colours through CSS custom properties and moves to a new release
@@ -133,6 +133,12 @@ The footer's `--khe-footer-*` properties go on `.site-footer`. Every
 property and its default is at the top of
 [`src/site-header.css`](src/site-header.css) and
 [`src/site-footer.css`](src/site-footer.css).
+
+## Design check
+
+`npx khe-design-lint` checks an app's source against the family's design
+rules and a baseline that only shrinks, configured in `khe-design-lint.json`;
+it reads text, so a class built by string concatenation is not seen.
 
 ## Development
 

@@ -1,7 +1,7 @@
 {
   "name": "@khelias/ui",
-  "version": "0.3.1",
-  "description": "The KHE site header with its rooms menu and theme toggle, and the site footer: CSS custom properties, HTML-string renderers, React components and framework-free theme and rooms modules.",
+  "version": "0.4.0",
+  "description": "The KHE site header with its rooms menu and theme toggle, and the site footer: CSS custom properties, HTML-string renderers, React components and framework-free theme and rooms modules; and khe-design-lint, the family design check.",
   "license": "MIT",
   "author": "Kaido Henrik Elias",
   "type": "module",
@@ -45,6 +45,9 @@
       "default": "./dist/react.js"
     },
     "./package.json": "./package.json"
+  },
+  "bin": {
+    "khe-design-lint": "dist/design-lint.js"
   },
   "files": [
     "dist"

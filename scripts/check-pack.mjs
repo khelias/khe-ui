@@ -8,6 +8,18 @@ const expected = [
   'README.md',
   'dist/core.d.ts',
   'dist/core.js',
+  'dist/design-lint.d.ts',
+  'dist/design-lint.js',
+  'dist/design-lint/baseline.d.ts',
+  'dist/design-lint/baseline.js',
+  'dist/design-lint/rules.d.ts',
+  'dist/design-lint/rules.js',
+  'dist/design-lint/run.d.ts',
+  'dist/design-lint/run.js',
+  'dist/design-lint/scan.d.ts',
+  'dist/design-lint/scan.js',
+  'dist/design-lint/tailwind-v3-hex.d.ts',
+  'dist/design-lint/tailwind-v3-hex.js',
   'dist/html.d.ts',
   'dist/html.js',
   'dist/react.d.ts',
@@ -46,4 +58,10 @@ for (const name of ['theme.js', 'rooms.js']) {
     console.error(`check-pack: dist/${name} imports something; it must stand alone`);
     process.exit(1);
   }
+}
+
+// npm runs a bin through its shebang; tsc keeps the line only while it is the first.
+if (!readFileSync(new URL('../dist/design-lint.js', import.meta.url), 'utf8').startsWith('#!/usr/bin/env node\n')) {
+  console.error('check-pack: dist/design-lint.js does not start with the node shebang');
+  process.exit(1);
 }

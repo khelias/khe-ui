@@ -207,8 +207,10 @@ change is a minor release.
 
 [docs/adr/002](docs/adr/002-release-through-trusted-publishing.md). In
 short: bump `version` in `package.json` (0.x until all four apps run the
-package, then 1.0.0), commit, `git tag v<version>`, push the commit and the
-tag. `release.yml` checks, refuses a tag that does not match the version,
+package, then 1.0.0), commit, `git tag v<version>`, push the commit; the
+operator pushes the tag, since it publishes and cannot be undone (estate
+[ADR-023](https://github.com/khelias/khe-architecture/blob/main/decisions/023-agent-pushes-where-its-session-allows.md);
+the commit gate refuses it from the agent). `release.yml` checks, refuses a tag that does not match the version,
 and publishes through npm trusted publishing (environment `npm`, no token,
 provenance added by npm); a prerelease such as `v0.2.0-rc.1` goes to the
 `next` dist-tag, not `latest`. 0.1.0 was published by hand and its tag is

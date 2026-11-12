@@ -1,5 +1,8 @@
 # khe-ui
 
+Workspace-wide rules (push, review, docs, estate ADRs) are in [khe-workspace
+`AGENTS.md`](https://github.com/khelias/khe-workspace/blob/main/AGENTS.md).
+
 `@khelias/ui` on npmjs: the KHE site header with its rooms menu and theme
 toggle, and the site footer, each as CSS custom properties, an HTML-string
 renderer and a React component, plus framework-free theme and rooms
@@ -224,9 +227,7 @@ updates, digests, pins and lock file maintenance (`renovate.json`); the way
 back is to revert its commit on `main`. `release.yml` publishes the tagged
 version of `@khelias/ui`; the way back from a bad release is `npm deprecate`
 on that version and a fixed release, and nothing reaches an app before that
-app merges its own update, because no consumer automerges this package. A
-new automated writer joins the estate's writer register in khe-meta in the
-same change.
+app merges its own update, because no consumer automerges this package.
 
 ## Rules
 

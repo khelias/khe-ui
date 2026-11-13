@@ -17,7 +17,7 @@ puts the theme toggle, the theme rules and the footer here, and
 [estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)
 the rooms menu, the room list, the room accents and the design check.
 
-npm, Node 24 (`.nvmrc`, `engine-strict`), TypeScript 7 compiled by plain
+npm, Node 26 (`.nvmrc`, `engine-strict`), TypeScript 7 compiled by plain
 `tsc`, Vitest with happy-dom for the tests that need a DOM. No runtime
 dependencies; `react` ^19 is an optional peer dependency. The bin runs on
 Node built-ins only ([docs/adr/005](docs/adr/005-design-check-as-a-node-bin.md)).

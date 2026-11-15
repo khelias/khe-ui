@@ -64,7 +64,8 @@
 
 /* The KHE.ee link and the divider after it, for the product view, whose header has no
    mark. The selector outweighs .site-footer nav a. */
-:root:not([data-khe-view="product"]) :is(.site-footer__home, .site-footer__home + .site-footer__divider) {
+:root:not([data-khe-view="product"]) .site-footer__home,
+:root:not([data-khe-view="product"]) .site-footer__home + .site-footer__divider {
   display: none;
 }
 

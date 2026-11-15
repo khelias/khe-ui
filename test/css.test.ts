@@ -57,7 +57,7 @@ function contrast(a: Rgba, b: Rgba): number {
 const [bgR, bgG, bgB] = colour('--khe-header-bg');
 const headerBg: Rgba = [bgR, bgG, bgB, 1];
 
-const HOME_HIDDEN = ':root:not([data-khe-view="product"]) :is(.site-footer__home, .site-footer__home + .site-footer__divider)';
+const HOME_HIDDEN = ':root:not([data-khe-view="product"]) .site-footer__home,\n:root:not([data-khe-view="product"]) .site-footer__home + .site-footer__divider';
 
 const LITERAL_COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|color-mix)\(/i;
 
@@ -298,7 +298,7 @@ describe('site-footer.css', () => {
   it('shows the home link and the divider after it in the product view only, over the link rule', () => {
     const rule = rules(footerCss).find((candidate) => candidate.selector === HOME_HIDDEN);
     expect(rule!.body.trim()).toBe('display: none;');
-    expect(specificity(HOME_HIDDEN)).toBeGreaterThan(specificity('.site-footer nav a'));
+    for (const selector of HOME_HIDDEN.split(',')) expect(specificity(selector.trim())).toBeGreaterThan(specificity('.site-footer nav a'));
   });
 
 });

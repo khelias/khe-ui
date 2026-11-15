@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { SiteFooter } from '../src/react.js';
@@ -87,6 +88,32 @@ describe('renderSiteFooter', () => {
     const one = parse(renderSiteFooter(fixtures['a home link and one link']!)).querySelector('nav')!;
     expect([...one.children].map((child) => child.className || child.localName)).toEqual(['site-footer__home', 'site-footer__divider', 'a']);
     expect(parse(renderSiteFooter(base)).querySelector('.site-footer__home')).toBeNull();
+  });
+
+  it('shows the home link and the divider after it in the product view only', () => {
+    document.head.innerHTML = `<style>${readFileSync(`${import.meta.dirname}/../src/site-footer.css`, 'utf8')}</style>`;
+    document.body.innerHTML = renderSiteFooter(fixtures['a home link']!);
+    const shown = () =>
+      [...document.querySelectorAll('nav > *')].map((node) => `${node.className || node.localName}:${getComputedStyle(node).display !== 'none'}`);
+    try {
+      expect(shown()).toEqual([
+        'site-footer__home:false',
+        'site-footer__divider:false',
+        'a:true',
+        'site-footer__divider:true',
+        'a:true',
+        'site-footer__divider:true',
+        'a:true',
+      ]);
+      // happy-dom keeps computed styles across an attribute change on <html>, so render again.
+      document.documentElement.setAttribute('data-khe-view', 'product');
+      document.body.innerHTML = renderSiteFooter(fixtures['a home link']!);
+      expect(shown().every((entry) => entry.endsWith(':true'))).toBe(true);
+    } finally {
+      document.documentElement.removeAttribute('data-khe-view');
+      document.head.innerHTML = '';
+      document.body.innerHTML = '';
+    }
   });
 
   it('refuses a javascript: home link and attrs that repeat its own', () => {

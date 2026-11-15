@@ -3,7 +3,8 @@
    its palette on .site-header (and on a standalone .language-switcher, if it has
    one). The defaults are khe.ee's dark teal, except the room dots, which are
    the family's room accents (estate ADR-018). Loads no fonts. The :root selectors
-   pick the theme toggle's icon and the dark dot values. */
+   pick the theme toggle's icon and the dark dot values, and show the product view
+   (estate ADR-030). */
 
 /* The defaults sit on the header and on a switcher outside one, not on the switcher
    inside, so values an app sets on .site-header reach it. */
@@ -33,6 +34,7 @@
   --khe-header-menu-border: rgba(255, 255, 255, 0.1);
   --khe-header-menu-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
   --khe-header-menu-current-bg: rgba(94, 234, 212, 0.07);
+  --khe-header-demo-bg: #0b0e0e;
   /* The room accents of khe-sites' DESIGN.md, light here, dark below. */
   --khe-header-room-home: #d7263d;
   --khe-header-room-games: #8a5a12;
@@ -216,8 +218,43 @@ html:has(.site-header--fixed) {
   text-decoration: none;
 }
 
+/* A demo's line under the row (estate ADR-030): part of the header, so a sticky or fixed
+   header keeps it and a measured --host-h includes it; neutral, on a ground of its own.
+   The label stays whole and the sentence wraps beside it. */
+.site-header__demo {
+  min-height: 2.25rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--khe-header-border);
+  background: var(--khe-header-demo-bg);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.site-header__demo-inner {
+  width: min(var(--khe-header-max-width), 100%);
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  margin: 0 auto;
+  padding: 0 max(1rem, env(safe-area-inset-right)) 0 max(1rem, env(safe-area-inset-left));
+}
+
+.site-header__demo-label {
+  flex-shrink: 0;
+  color: var(--khe-header-text);
+  font-weight: var(--khe-header-title-weight);
+}
+
+.site-header__demo-text {
+  min-width: 0;
+  color: var(--khe-header-text-muted);
+}
+
 /* In the top layer, so the header's own stacking and overflow do not clip it. It opens
-   just below the header (whose heights --host-h defaults to) at the inner row's start;
+   just below the inner row (whose heights --host-h defaults to), over a demo line, at
+   the row's start;
    100% is the viewport without its scrollbar, which 100vw would include. */
 .site-header__rooms-menu {
   position: fixed;
@@ -532,6 +569,10 @@ html:has(.site-header--fixed) {
     font-size: 0.82rem;
   }
 
+  .site-header__demo-inner {
+    padding: 0 max(0.75rem, env(safe-area-inset-right)) 0 max(0.75rem, env(safe-area-inset-left));
+  }
+
   .site-header__rooms-menu {
     top: calc(3.35rem + 1px);
     left: max(0.75rem, env(safe-area-inset-left));
@@ -542,15 +583,26 @@ html:has(.site-header--fixed) {
     --host-h: calc(3.35rem + 1px);
   }
 
-  /* An app's own action takes the title's room first. */
-  .site-header:has(.site-header__actions > :not(.site-header__theme, .language-switcher)) :is(.site-header__title, .site-header__slash) {
+  /* An app's own action takes the title's room first, in the frame, where the mark and
+     the room need the row too. */
+  :where(:root:not([data-khe-view="product"])) .site-header:has(.site-header__actions > :not(.site-header__theme, .language-switcher)) :is(.site-header__title, .site-header__slash) {
     display: none;
   }
 }
 
 @media (max-width: 360px) {
-  .site-header__title,
-  .site-header__slash {
+  :where(:root:not([data-khe-view="product"])) :is(.site-header__title, .site-header__slash) {
     display: none;
   }
+}
+
+/* The product view (estate ADR-030): the script from @khelias/ui/view sets the attribute
+   before first paint. The app's title leads the row, at the size of a page's context
+   name; no mark, rooms or demo line. */
+:root[data-khe-view="product"] :is(.site-header__brand, .site-header__rooms, .site-header__rooms-menu, .site-header__slash, .site-header__demo) {
+  display: none;
+}
+
+:root[data-khe-view="product"] .site-header__title {
+  font-size: 1.0625rem;
 }

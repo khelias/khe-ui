@@ -33,6 +33,8 @@ const fixtures: Record<string, SiteFooterOptions> = {
     links: [{ label: 'Tom & <Jerry>', href: '/?a=1&b="2"' }],
     lines: [{ text: 'Say "hi" <script>' }],
   },
+  'a home link': { ...base, home: { label: 'KHE.ee', href: 'https://khe.ee/?lang=et', attrs: { 'data-link': 'home' } } },
+  'a home link and one link': { label: 'Links', home: { label: 'KHE.ee', href: 'https://khe.ee/' }, links: [{ label: 'Privacy', href: '/privacy' }] },
   'every attrs part': {
     ...base,
     links: [links[0], links[1], { ...links[2], attrs: { 'data-link': 'privacy', 'data-i18n': 'privacyLink' } }],
@@ -66,6 +68,31 @@ describe('renderSiteFooter', () => {
     expect(nav.querySelectorAll('a > svg.site-footer__icon:first-child')).toHaveLength(2);
     expect(nav.querySelector('a[href^="/privacy"] svg')).toBeNull();
     expect(doc.querySelectorAll('footer > span.site-footer__line')).toHaveLength(1);
+  });
+
+  it('puts the home link first, with its class, and a divider after it', () => {
+    const html = renderSiteFooter(fixtures['a home link']!);
+    expect(html).toContain('<a class="site-footer__home" href="https://khe.ee/?lang=et" data-link="home">KHE.ee</a>');
+    const nav = parse(html).querySelector('footer.site-footer > nav')!;
+    expect([...nav.children].map((child) => child.className || child.localName)).toEqual([
+      'site-footer__home',
+      'site-footer__divider',
+      'a',
+      'site-footer__divider',
+      'a',
+      'site-footer__divider',
+      'a',
+    ]);
+    expect(nav.querySelector('.site-footer__home + .site-footer__divider')).not.toBeNull();
+    const one = parse(renderSiteFooter(fixtures['a home link and one link']!)).querySelector('nav')!;
+    expect([...one.children].map((child) => child.className || child.localName)).toEqual(['site-footer__home', 'site-footer__divider', 'a']);
+    expect(parse(renderSiteFooter(base)).querySelector('.site-footer__home')).toBeNull();
+  });
+
+  it('refuses a javascript: home link and attrs that repeat its own', () => {
+    expect(() => renderSiteFooter({ ...base, home: { label: 'x', href: 'javascript:alert(1)' } })).toThrow(/home href is a javascript: URL/);
+    expect(() => renderSiteFooter({ ...base, home: { label: 'x', href: '/', attrs: { href: '/' } } })).toThrow(/only data-\*/);
+    expect(() => renderSiteFooter({ ...base, home: { label: 'x', href: '/', attrs: { class: 'x' } } })).toThrow(/only data-\*/);
   });
 
   it('puts no divider by a single link and no line without lines', () => {

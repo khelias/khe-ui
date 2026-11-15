@@ -1,7 +1,7 @@
 import { type SiteFooterBaseOptions, prepareFooter } from './core.js';
 import { escapeHtml, iconHtml, indented, tag } from './html.js';
 
-export type { Attrs, SiteFooterLine, SiteFooterLink, SiteFooterPartAttrs } from './core.js';
+export type { Attrs, SiteFooterHome, SiteFooterLine, SiteFooterLink, SiteFooterPartAttrs } from './core.js';
 
 export interface SiteFooterOptions extends SiteFooterBaseOptions<string> {
   /** Put in front of every line, e.g. the indent of the line the footer replaces. */

@@ -1,7 +1,8 @@
 /* The KHE site footer: anatomy only. Every colour, font, size and weight is a
    --khe-footer-* custom property; an app sets its values on .site-footer and
    places the footer itself (margins, padding, position on the page). The
-   defaults match the header's. Loads no fonts. */
+   defaults match the header's. Loads no fonts. The :root selector shows the home
+   link in the product view only (estate ADR-030). */
 
 :where(.site-footer) {
   --khe-footer-font: 'Inter', system-ui, sans-serif;
@@ -59,6 +60,12 @@
   width: var(--khe-footer-icon-size);
   height: var(--khe-footer-icon-size);
   fill: currentColor;
+}
+
+/* The KHE.ee link and the divider after it, for the product view, whose header has no
+   mark. The selector outweighs .site-footer nav a. */
+:root:not([data-khe-view="product"]) :is(.site-footer__home, .site-footer__home + .site-footer__divider) {
+  display: none;
 }
 
 @media (hover: hover) and (pointer: fine) {

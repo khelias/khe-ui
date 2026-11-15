@@ -5,7 +5,7 @@ Workspace-wide rules (push, review, docs, estate ADRs) are in [khe-workspace
 
 `@khelias/ui` on npmjs: the KHE site header with its rooms menu and theme
 toggle, and the site footer, each as CSS custom properties, an HTML-string
-renderer and a React component, plus framework-free theme and rooms
+renderer and a React component, plus framework-free theme, rooms and view
 modules, and the `khe-design-lint` bin, the family design check; shared
 by khe-sites, khe-study, khe-ai-adventure and khe-trips. Shared UI packages between app repos are
 allowed by
@@ -15,7 +15,9 @@ automerged there.
 [Estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)
 puts the theme toggle, the theme rules and the footer here, and
 [estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)
-the rooms menu, the room list, the room accents and the design check.
+the rooms menu, the room list, the room accents and the design check, and
+[estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)
+the demo line and the product view of a product page.
 
 npm, Node 26 (`.nvmrc`, `engine-strict`), TypeScript 7 compiled by plain
 `tsc`, Vitest with happy-dom for the tests that need a DOM. No runtime
@@ -26,7 +28,7 @@ Node built-ins only ([docs/adr/005](docs/adr/005-design-check-as-a-node-bin.md))
 
 - `npm run check` - typecheck, tests, build, and `scripts/check-pack.mjs`,
   which fails unless `npm pack` would ship exactly the expected files,
-  `dist/theme.js` and `dist/rooms.js` import nothing and
+  `dist/theme.js`, `dist/rooms.js` and `dist/view.js` import nothing and
   `dist/design-lint.js` starts with the node shebang
 - `npm test` - the tests only
 - `npm run build` - `dist/`: `tsc -p tsconfig.build.json` plus copies of
@@ -54,6 +56,13 @@ Node built-ins only ([docs/adr/005](docs/adr/005-design-check-as-a-node-bin.md))
   locale)`, which rewrites a rendered menu for a page that switches language
   without re-rendering. Imports nothing and touches no DOM at load, like
   `theme.ts`: khe-sites copies `dist/rooms.js` as it is
+- `src/view.ts` - `viewInitScript(root)`, the inline pre-paint script of
+  a product page under `root` (estate ADR-030): it keeps the frame for 30
+  minutes after a load that came from a frame page, stored per tab in
+  `sessionStorage` under `khe-view:<root>`, and otherwise, always when
+  installed, sets `data-khe-view="product"` on `<html>`; and
+  `checkedProductRoot`. Imports nothing and touches no DOM at load, like
+  `theme.ts`
 - `src/core.ts` - the option types, the shared `attrs` and `href` checks,
   the icons, and `prepareHeader()` and `prepareFooter()`, which check the
   options and return every part's attributes in contract order; the
@@ -79,7 +88,8 @@ Both renderers write the same markup, attributes in this order, and the
 parity test holds them to it. A change here is a change to both renderers,
 the tests and the consumers' checks:
 
-- `header.site-header`, plus `site-header--fixed` with `fixed`; no
+- `header.site-header`, plus `site-header--fixed` with `fixed`, then with
+  `product` (which needs `context`) `data-khe-product` (its `root`); no
   `aria-label`
 - `div.site-header__inner`
 - `a.site-header__brand.brand-mark` with `href`, `aria-label`, holding
@@ -111,21 +121,28 @@ the tests and the consumers' checks:
   `focusable="false"`), then `div.language-switcher` with `role="group"`
   and `aria-label`, holding one `button` per locale with `type="button"`,
   `data-lang-option` and `aria-pressed`
+- with `demo` (which needs `rooms`), after `div.site-header__inner` and
+  inside the `header`: `p.site-header__demo` with `role="note"`, holding
+  `span.site-header__demo-inner`, which holds
+  `strong.site-header__demo-label` (`label`) and
+  `span.site-header__demo-text` (`note`)
 - `attrs` adds attributes after each part's own: `brand`, `rooms` (the
-  button, only with `rooms`), `title`, `theme` (only with `themeToggle`) and
-  `switcher`, and each locale's `attrs` on its button. Only `data-*`, `aria-*`, `id`,
+  button, only with `rooms`), `title`, `theme` (only with `themeToggle`),
+  `switcher`, and `demoLabel` and `demoText` (only with `demo`), and each
+  locale's `attrs` on its button. Only `data-*`, `aria-*`, `id`,
   `lang`, `dir`, `title` and `translate`, never one the part sets itself
 
 The footer, `footer.site-footer`:
 
-- `nav` with `aria-label` (`label`), holding each link as an `a` with
+- `nav` with `aria-label` (`label`), holding first, with `home`,
+  `a.site-footer__home` with `href`, then each link as an `a` with
   `href`; a link with `icon` (`github` or `linkedin`) has
   `svg.site-footer__icon` (`viewBox`, `aria-hidden="true"`,
   `focusable="false"`) before its label; between links a
   `span.site-footer__divider` with `aria-hidden="true"` holding `·`
 - then each line as `span.site-footer__line`
-- `attrs` on `footer` and `nav`, and `attrs` on each link and line, under
-  the same rules as the header's
+- `attrs` on `footer` and `nav`, and `attrs` on the home link, each link
+  and line, under the same rules as the header's
 
 The class names are shared with khe-trips' `DESIGN.md` and khe-sites'
 `check.mjs`: renaming one breaks them. The rooms button and links are
@@ -145,9 +162,15 @@ loads no fonts. Its `:root` selectors pick the theme toggle's icon from
 script runs, and set the dark values of the room dots
 (`--khe-header-room-<id>`) under `:root[data-theme="dark"]` and the dark
 media query, wrapped whole in `:where()` so an app's value on
-`.site-header` still wins; nothing else is set there
+`.site-header` still wins; no other custom property is set there
 ([docs/adr/004](docs/adr/004-rooms-menu-as-a-native-popover.md) point 4).
-The menu has `--khe-header-menu-bg`, `-border`, `-shadow` and
+The product view's selectors, under `:root[data-khe-view="product"]`, set
+only `display` on the mark, the rooms button and list, the slash and the
+demo line, and the title's size (estate ADR-030); the footer's hides the
+home link and the divider after it outside that view. The demo line sits
+on `--khe-header-demo-bg`, under the header's border, its label in
+`--khe-header-text`, its sentence in `--khe-header-text-muted`, both 4.5:1
+or more on the default. The menu has `--khe-header-menu-bg`, `-border`, `-shadow` and
 `-current-bg`; its names use `--khe-header-text`, its notes
 `--khe-header-text-muted`. The header fills its container; a page that
 puts it inside a padded container makes it full-bleed itself. Muted text,
@@ -156,13 +179,13 @@ defaults, and every dot at 3:1 on the family paper and surface of its theme
 (tests read them from the CSS); a new property needs a default and is used
 through `var()` only. The toggle uses the switcher's tokens.
 
-The menu opens in the top layer at `position: fixed`, just below the header
-(the heights `--host-h` defaults to, or `--host-h` itself with `fixed`), at
+The menu opens in the top layer at `position: fixed`, just below the inner
+row and over a demo line (the heights `--host-h` defaults to, or `--host-h` itself with `fixed`), at
 the inner row's start, or under the button where anchor positioning works.
 Without the Popover API the button, the list and the slash are hidden. When
-the row is short of room the title ellipsizes and at 360px and below hides
-(at 520px and below when the React `actions` render anything), then the
-room name ellipsizes; the mark, toggle and switcher never shrink. The list's
+the row is short of room the title ellipsizes and, in the frame view, at
+360px and below hides (at 520px and below when the React `actions` render
+anything), then the room name ellipsizes; the mark, toggle and switcher never shrink. The list's
 `li` rules have two classes, so a page's `li` rules, scoped by one class or
 none, do not reach them; its `ul` rule has one class and wins over a page's
 element rules.
@@ -236,7 +259,9 @@ app merges its own update, because no consumer automerges this package.
    functions are presentation
    ([estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)),
    and so are the room list and the design check
-   ([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)).
+   ([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md))
+   and the view decision of a product page
+   ([estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)).
 2. **No runtime dependencies.** React stays an optional peer dependency.
 3. **A public repo and a public package.** Nothing identifying, no house
    data.

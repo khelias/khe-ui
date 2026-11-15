@@ -37,6 +37,16 @@ const fixtures: Record<string, SiteHeaderOptions> = {
     context: { title: 'Say "hi" <script>' },
   },
   'theme toggle': { ...base, context: { title: 'Mängud' }, themeToggle: { label: 'Tume teema' } },
+  'demo, product and fixed': {
+    ...base,
+    fixed: true,
+    rooms: { current: 'stories', locale: 'et' },
+    context: { title: 'Unejänku' },
+    demo: { label: 'Demo', note: 'Mõned jutud "kogust" & <muu>' },
+    product: { root: '/stories/' },
+    attrs: { demoLabel: { 'data-i18n': 'headerDemo' }, demoText: { 'data-i18n': 'headerDemoNoteStories', lang: 'et' } },
+  },
+  'product without demo': { ...base, rooms: games, context: { title: 'Tarkade Mängud' }, product: { root: '/study/' } },
   'every attrs part': {
     ...base,
     themeToggle: { label: 'Dark "theme" & <more>' },
@@ -101,6 +111,39 @@ describe('renderSiteHeader', () => {
     expect(html).toContain('<div class="language-switcher" role="group" aria-label="Keel" data-i18n-aria="headerLanguage">');
     expect(html).toContain('<button type="button" data-lang-option="et" aria-pressed="true" title="Eesti">ET</button>');
     expect(html).toContain('<button type="button" data-lang-option="en" aria-pressed="false" data-x="&quot;q&quot;">EN</button>');
+  });
+
+  it('puts the demo line after the inner row, inside the header, and marks a product page', () => {
+    const html = normalise(renderSiteHeader(fixtures['demo, product and fixed']!));
+    expect(html).toMatch(/^<header class="site-header site-header--fixed" data-khe-product="\/stories\/">/);
+    expect(html).toContain(
+      '<p class="site-header__demo" role="note"><span class="site-header__demo-inner">' +
+        '<strong class="site-header__demo-label" data-i18n="headerDemo">Demo</strong>' +
+        '<span class="site-header__demo-text" data-i18n="headerDemoNoteStories" lang="et">Mõned jutud &quot;kogust&quot; &amp; &lt;muu&gt;</span></span></p>',
+    );
+    const header = parse(html).querySelector('header')!;
+    expect([...header.children].map((child) => `${child.localName}.${child.className}`)).toEqual(['div.site-header__inner', 'p.site-header__demo']);
+    const product = parse(renderSiteHeader(fixtures['product without demo']!)).querySelector('header')!;
+    expect(product.getAttribute('data-khe-product')).toBe('/study/');
+    expect(product.querySelector('.site-header__demo')).toBeNull();
+    for (const name of ['rooms and a title', 'no rooms (landing)']) {
+      const plain = parse(renderSiteHeader(fixtures[name]!)).querySelector('header')!;
+      expect(plain.hasAttribute('data-khe-product')).toBe(false);
+      expect(plain.querySelector('.site-header__demo')).toBeNull();
+    }
+  });
+
+  it('refuses a demo without rooms, its attrs without a demo, and a bad product root', () => {
+    const demo = { label: 'Demo', note: 'Made up.' };
+    expect(() => renderSiteHeader({ ...base, demo })).toThrow(/demo without rooms/);
+    expect(() => renderSiteHeader({ ...base, rooms: games, attrs: { demoLabel: { 'data-x': 'y' } } })).toThrow(/without demo/);
+    expect(() => renderSiteHeader({ ...base, rooms: games, attrs: { demoText: { 'data-x': 'y' } } })).toThrow(/without demo/);
+    expect(() => renderSiteHeader({ ...base, rooms: games, demo, attrs: { demoLabel: { class: 'x' } } })).toThrow(/only data-\*/);
+    expect(() => renderSiteHeader({ ...base, rooms: games, demo, attrs: { demoText: { role: 'x' } } })).toThrow(/only data-\*/);
+    for (const root of ['/stories', 'stories/', '/a/b/', '/"x"/']) {
+      expect(() => renderSiteHeader({ ...base, context: { title: 'x' }, product: { root } })).toThrow(/product root/);
+    }
+    expect(() => renderSiteHeader({ ...base, rooms: games, product: { root: '/study/' } })).toThrow(/product without context/);
   });
 
   it('nests the parts as the contract says', () => {

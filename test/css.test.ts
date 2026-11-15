@@ -57,6 +57,8 @@ function contrast(a: Rgba, b: Rgba): number {
 const [bgR, bgG, bgB] = colour('--khe-header-bg');
 const headerBg: Rgba = [bgR, bgG, bgB, 1];
 
+const HOME_HIDDEN = ':root:not([data-khe-view="product"]) :is(.site-footer__home, .site-footer__home + .site-footer__divider)';
+
 const LITERAL_COLOUR = /#[0-9a-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|color-mix)\(/i;
 
 const ROOM_DOTS = ROOM_IDS.map((id) => `--khe-header-room-${id}`);
@@ -113,10 +115,15 @@ describe('site-header.css', () => {
     expect(css).not.toMatch(/@font-face|@import/);
   });
 
-  it('reads :root only for the theme icon and the dark dots, and sets only the room dots there', () => {
+  it('reads :root only for the theme icon, the dark dots and the view, and sets only the room dots there', () => {
     const rooted = rules(css).filter((rule) => rule.selector.includes(':root'));
     expect(rooted.length).toBeGreaterThanOrEqual(6);
     for (const rule of rooted) {
+      if (rule.selector.includes('data-khe-view')) {
+        expect(rule.body).not.toContain('--');
+        expect([...rule.body.matchAll(/([a-z-]+):/g)].map(([, name]) => name)).toEqual([expect.stringMatching(/^(?:display|font-size)$/)]);
+        continue;
+      }
       if (DARK_DOT_SELECTORS.includes(rule.selector)) {
         expect([...declarations(rule.body).keys()].sort()).toEqual([...ROOM_DOTS].sort());
         expect(rule.body.replace(/--khe-header-room-[a-z]+:\s*#[0-9a-f]{6};/g, '').trim()).toBe('');
@@ -215,6 +222,28 @@ describe('site-header.css', () => {
     expect(item!.body).toMatch(/min-height: 2\.75rem;/);
   });
 
+  it('gives the demo line\'s label and sentence at least 4.5:1 on its default ground', () => {
+    const ground = over(colour('--khe-header-demo-bg'), headerBg);
+    expect(contrast(colour('--khe-header-text'), ground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(colour('--khe-header-text-muted'), ground)).toBeGreaterThanOrEqual(4.5);
+    const line = rules(css).find((rule) => rule.selector === '.site-header__demo');
+    expect(line!.body).toMatch(/min-height: 2\.25rem;[\s\S]*padding: 0\.5rem 0;[\s\S]*border-top: 1px solid var\(--khe-header-border\);[\s\S]*background: var\(--khe-header-demo-bg\);/);
+  });
+
+  it('hides the mark, the rooms, the slash and the demo line in the product view, and keeps the title', () => {
+    const view = rules(css).filter((rule) => rule.selector.includes('[data-khe-view="product"]') && !rule.selector.includes(':not('));
+    const hidden = view.find((rule) => rule.body.trim() === 'display: none;');
+    expect(hidden!.selector).toBe(
+      ':root[data-khe-view="product"] :is(.site-header__brand, .site-header__rooms, .site-header__rooms-menu, .site-header__slash, .site-header__demo)',
+    );
+    expect(view.find((rule) => rule.selector === ':root[data-khe-view="product"] .site-header__title')!.body.trim()).toBe('font-size: 1.0625rem;');
+    // The narrow rules that hide the title make room for the mark and the room, so the frame alone has them.
+    const narrow = /@media \(max-width: 360px\) \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? '';
+    expect(rules(narrow).map((rule) => rule.selector)).toEqual([':where(:root:not([data-khe-view="product"])) :is(.site-header__title, .site-header__slash)']);
+    expect(ACTION_HIDES_TITLE.startsWith(':where(:root:not([data-khe-view="product"])) ')).toBe(true);
+    expect(specificity(hidden!.selector)).toBeGreaterThan(specificity('.site-header__rooms'));
+  });
+
   it('has no kicker any more', () => {
     expect(css).not.toMatch(/kicker|site-header__context/);
   });
@@ -248,11 +277,18 @@ describe('site-footer.css', () => {
     expect(contrast(colour('--khe-footer-text', footerDefaults), headerBg)).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('sets no margin or padding on the footer itself, and has no :root rule or font face', () => {
+  it('sets no margin or padding on the footer itself, and has no :root rule but the view\'s, nor a font face', () => {
     const own = rules(footerCss).filter((rule) => rule.selector === '.site-footer');
     expect(own).toHaveLength(1);
     expect(own[0]!.body).not.toMatch(/margin|padding/);
-    expect(footerCss).not.toMatch(/:root|@font-face|@import/);
+    expect(footerCss).not.toMatch(/@font-face|@import/);
+    expect(rules(footerCss).filter((rule) => rule.selector.includes(':root')).map((rule) => rule.selector)).toEqual([HOME_HIDDEN]);
+  });
+
+  it('shows the home link and the divider after it in the product view only, over the link rule', () => {
+    const rule = rules(footerCss).find((candidate) => candidate.selector === HOME_HIDDEN);
+    expect(rule!.body.trim()).toBe('display: none;');
+    expect(specificity(HOME_HIDDEN)).toBeGreaterThan(specificity('.site-footer nav a'));
   });
 
 });

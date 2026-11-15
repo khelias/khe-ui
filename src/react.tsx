@@ -11,12 +11,15 @@ import { type ThemeOverride, applyThemeOverride, onSystemDarkChange, readThemeOv
 
 export type {
   Attrs,
+  SiteFooterHome,
   SiteFooterLine,
   SiteFooterLink,
   SiteFooterPartAttrs,
   SiteHeaderContext,
+  SiteHeaderDemo,
   SiteHeaderLocale,
   SiteHeaderPartAttrs,
+  SiteHeaderProduct,
   SiteHeaderRooms,
 } from './core.js';
 
@@ -51,12 +54,12 @@ function IconSvg({ icon }: { icon: Icon }) {
  * and passes the active one back in; the same for the theme, see `useThemeOverride`.
  */
 export function SiteHeader<Code extends string = string>(options: SiteHeaderProps<Code>) {
-  const { headerClass, brand, rooms, slash, title, theme, switcher, buttons } = prepareHeader(options, options.themeToggle?.dark === true);
+  const { header, brand, rooms, slash, title, theme, switcher, demo, buttons } = prepareHeader(options, options.themeToggle?.dark === true);
   const { actions, themeToggle, activeLocale, onLocaleChange } = options;
   const Title = title?.tag;
 
   return (
-    <header className={headerClass}>
+    <header {...props(header)}>
       <div className="site-header__inner">
         <a {...props(brand)}>
           <span>KHE</span>
@@ -110,6 +113,14 @@ export function SiteHeader<Code extends string = string>(options: SiteHeaderProp
           </div>
         </div>
       </div>
+      {demo ? (
+        <p {...props(demo.line)}>
+          <span className="site-header__demo-inner">
+            <strong {...props(demo.label.attrs)}>{demo.label.text}</strong>
+            <span {...props(demo.text.attrs)}>{demo.text.text}</span>
+          </span>
+        </p>
+      ) : null}
     </header>
   );
 }

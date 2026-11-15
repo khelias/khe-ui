@@ -34,6 +34,8 @@ const expected = [
   'dist/site-header.js',
   'dist/theme.d.ts',
   'dist/theme.js',
+  'dist/view.d.ts',
+  'dist/view.js',
   'package.json',
 ];
 
@@ -51,8 +53,9 @@ if (missing.length || extra.length) {
 }
 
 // khe-sites serves dist/theme.js and dist/rooms.js as they are, with no bundler to
-// resolve an import. Comments survive the build, so a bare /import/ would trip on prose.
-for (const name of ['theme.js', 'rooms.js']) {
+// resolve an import; dist/view.js stays as plain, so any page can take it the same way.
+// Comments survive the build, so a bare /import/ would trip on prose.
+for (const name of ['theme.js', 'rooms.js', 'view.js']) {
   const source = readFileSync(new URL(`../dist/${name}`, import.meta.url), 'utf8');
   if (/^\s*import\b/m.test(source) || /\bimport\s*\(/.test(source) || /\bfrom\s*['"]/.test(source)) {
     console.error(`check-pack: dist/${name} imports something; it must stand alone`);

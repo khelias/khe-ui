@@ -1,7 +1,7 @@
 import { type SiteHeaderBaseOptions, prepareHeader } from './core.js';
 import { escapeHtml, iconHtml, indented, tag } from './html.js';
 
-export type { Attrs, SiteHeaderContext, SiteHeaderLocale, SiteHeaderPartAttrs, SiteHeaderRooms } from './core.js';
+export type { Attrs, SiteHeaderContext, SiteHeaderDemo, SiteHeaderLocale, SiteHeaderPartAttrs, SiteHeaderProduct, SiteHeaderRooms } from './core.js';
 export { escapeHtml } from './html.js';
 
 export interface SiteHeaderOptions<Code extends string = string> extends SiteHeaderBaseOptions<string, Code> {
@@ -16,9 +16,9 @@ export interface SiteHeaderOptions<Code extends string = string> extends SiteHea
  * is a native popover.
  */
 export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions<Code>): string {
-  const { headerClass, brand, rooms, slash, title, theme, switcher, buttons } = prepareHeader(options);
+  const { header, brand, rooms, slash, title, theme, switcher, demo, buttons } = prepareHeader(options);
   const lines = [
-    tag('header', [['class', headerClass]]),
+    tag('header', header),
     '  <div class="site-header__inner">',
     `    ${tag('a', brand)}`,
     '      <span>KHE</span><span class="brand-mark__suffix">.ee</span>',
@@ -48,6 +48,16 @@ export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions
     '      </div>',
     '    </div>',
     '  </div>',
+    ...(demo
+      ? [
+          `  ${tag('p', demo.line)}`,
+          '    <span class="site-header__demo-inner">',
+          `      ${tag('strong', demo.label.attrs)}${escapeHtml(demo.label.text)}</strong>`,
+          `      ${tag('span', demo.text.attrs)}${escapeHtml(demo.text.text)}</span>`,
+          '    </span>',
+          '  </p>',
+        ]
+      : []),
     '</header>',
   ];
   return indented('site-header', lines, options.indent);

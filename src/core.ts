@@ -1,4 +1,5 @@
 import { ROOMS, ROOMS_LABEL, type RoomId, type RoomLocale, checkedRoomLocale, hrefWithLang, roomById, roomItemName, roomsButtonName } from './rooms.js';
+import { checkedProductRoot } from './view.js';
 
 /** Extra attributes for one part of a component, rendered after the part's own. */
 export type Attrs = Readonly<Record<string, string>>;
@@ -97,6 +98,23 @@ export interface SiteHeaderRooms {
   readonly currentHref?: string;
 }
 
+/** The demo line under the header (estate ADR-030): what the demo shows and what stays private. */
+export interface SiteHeaderDemo {
+  /** e.g. `Demo`. */
+  readonly label: string;
+  /** One sentence. */
+  readonly note: string;
+}
+
+/**
+ * Marks a product page, one with the frame and the product view (estate ADR-030). The
+ * page embeds `viewInitScript(root)` from `@khelias/ui/view` itself.
+ */
+export interface SiteHeaderProduct {
+  /** The product's path, e.g. `/stories/`. */
+  readonly root: string;
+}
+
 export interface SiteHeaderPartAttrs {
   readonly brand?: Attrs;
   /** The rooms button. */
@@ -104,6 +122,10 @@ export interface SiteHeaderPartAttrs {
   readonly title?: Attrs;
   readonly theme?: Attrs;
   readonly switcher?: Attrs;
+  /** The demo line's label, only with `demo`. */
+  readonly demoLabel?: Attrs;
+  /** The demo line's sentence, only with `demo`. */
+  readonly demoText?: Attrs;
 }
 
 /**
@@ -124,10 +146,13 @@ export interface SiteHeaderBaseOptions<Node, Code extends string = string> {
   readonly languageLabel: string;
   /** Over a page laid out with `position: fixed`; see `--host-h` in the CSS. */
   readonly fixed?: boolean;
+  /** A demo's line under the header, shown in the frame view; needs `rooms`. */
+  readonly demo?: SiteHeaderDemo;
+  readonly product?: SiteHeaderProduct;
   readonly attrs?: SiteHeaderPartAttrs;
 }
 
-const HEADER_PARTS = ['brand', 'rooms', 'title', 'theme', 'switcher'] as const;
+const HEADER_PARTS = ['brand', 'rooms', 'title', 'theme', 'switcher', 'demoLabel', 'demoText'] as const;
 
 function prepareRooms(rooms: SiteHeaderRooms, attrs: Attrs | undefined) {
   const current = roomById(rooms.current);
@@ -181,7 +206,7 @@ function prepareRooms(rooms: SiteHeaderRooms, attrs: Attrs | undefined) {
  * a broken header, attrs of a toggle not rendered included.
  */
 export function prepareHeader<Node, Code extends string>(options: SiteHeaderBaseOptions<Node, Code>, dark = false) {
-  const { brand, rooms, context, themeToggle, locales, activeLocale, languageLabel, fixed, attrs = {} } = options;
+  const { brand, rooms, context, themeToggle, locales, activeLocale, languageLabel, fixed, demo, product, attrs = {} } = options;
   if (locales.length === 0) throw new TypeError('site-header: locales is empty');
   if (new Set(locales.map((locale) => locale.code)).size !== locales.length) {
     throw new TypeError('site-header: two locales have the same code');
@@ -192,13 +217,20 @@ export function prepareHeader<Node, Code extends string>(options: SiteHeaderBase
   checkedParts('site-header', attrs, HEADER_PARTS);
   if (attrs.theme && !themeToggle) throw new TypeError('site-header: attrs.theme without themeToggle');
   if (attrs.rooms && !rooms) throw new TypeError('site-header: attrs.rooms without rooms');
+  if (demo && !rooms) throw new TypeError('site-header: demo without rooms');
+  // The product view shows only the title on the left, so a product needs one.
+  if (product && !context) throw new TypeError('site-header: product without context');
+  if ((attrs.demoLabel || attrs.demoText) && !demo) throw new TypeError('site-header: attrs.demoLabel or attrs.demoText without demo');
   const part = (name: string, own: Pairs, extra: Attrs | undefined) => withAttrs('site-header', name, own, extra);
+  const headerClass = fixed ? 'site-header site-header--fixed' : 'site-header';
   const titleHref: Pairs = context?.href === undefined ? [] : [['href', checkedHref('site-header', 'context', context.href)]];
   // Checked even without a context, so a bad name fails on every page, not only some.
   const title = part('title', [['class', 'site-header__title'], ...titleHref], attrs.title);
 
   return {
-    headerClass: fixed ? 'site-header site-header--fixed' : 'site-header',
+    header: product
+      ? ([['class', headerClass], ['data-khe-product', checkedProductRoot(product.root)]] as Pairs)
+      : ([['class', headerClass]] as Pairs),
     brand: part(
       'brand',
       [
@@ -238,6 +270,14 @@ export function prepareHeader<Node, Code extends string>(options: SiteHeaderBase
       ],
       attrs.switcher,
     ),
+    demo: demo && {
+      line: [
+        ['class', 'site-header__demo'],
+        ['role', 'note'],
+      ] as Pairs,
+      label: { attrs: part('demoLabel', [['class', 'site-header__demo-label']], attrs.demoLabel), text: demo.label },
+      text: { attrs: part('demoText', [['class', 'site-header__demo-text']], attrs.demoText), text: demo.note },
+    },
     buttons: locales.map(({ code, label, attrs: extra }) => ({
       code,
       label,
@@ -274,6 +314,9 @@ export interface SiteFooterLink<Node> {
   readonly attrs?: Attrs;
 }
 
+/** The KHE.ee link of the product view: a link without an icon. */
+export type SiteFooterHome<Node> = Omit<SiteFooterLink<Node>, 'icon'>;
+
 export interface SiteFooterLine<Node> {
   readonly text: Node;
   readonly attrs?: Attrs;
@@ -288,6 +331,8 @@ export interface SiteFooterPartAttrs {
 export interface SiteFooterBaseOptions<Node> {
   /** The link list's accessible name, e.g. `Page links`. */
   readonly label: string;
+  /** The KHE.ee link in front of the links, shown in the product view only (estate ADR-030). */
+  readonly home?: SiteFooterHome<Node>;
   /** In order; at least one. */
   readonly links: readonly SiteFooterLink<Node>[];
   /** Lines of text under the links, e.g. where the site is hosted. */
@@ -299,22 +344,26 @@ const FOOTER_PARTS = ['footer', 'nav'] as const;
 
 /** The checked parts of the footer, in contract order, that both renderers only lay out. */
 export function prepareFooter<Node>(options: SiteFooterBaseOptions<Node>) {
-  const { label, links, lines = [], attrs = {} } = options;
+  const { label, home, links, lines = [], attrs = {} } = options;
   if (links.length === 0) throw new TypeError('site-footer: links is empty');
   checkedParts('site-footer', attrs, FOOTER_PARTS);
   const part = (name: string, own: Pairs, extra: Attrs | undefined) => withAttrs('site-footer', name, own, extra);
+  const anchor = (name: string, where: string, own: Pairs, link: SiteFooterHome<Node>) => ({
+    label: link.label,
+    attrs: part(name, [...own, ['href', checkedHref('site-footer', where, link.href)]], link.attrs),
+  });
 
   return {
     footer: part('footer', [['class', 'site-footer']], attrs.footer),
     nav: part('nav', [['aria-label', label]], attrs.nav),
-    links: links.map((link, index) => {
-      if (link.icon !== undefined && !Object.hasOwn(FOOTER_ICONS, link.icon)) throw new TypeError(`site-footer: unknown icon ${link.icon}`);
-      return {
-        label: link.label,
-        attrs: part('link', [['href', checkedHref('site-footer', `links[${index}]`, link.href)]], link.attrs),
-        icon: link.icon === undefined ? undefined : FOOTER_ICONS[link.icon],
-      };
-    }),
+    // The home link is the first link, so the divider after it is the first divider.
+    links: [
+      ...(home ? [{ ...anchor('home', 'home', [['class', 'site-footer__home']], home), icon: undefined }] : []),
+      ...links.map((link, index) => {
+        if (link.icon !== undefined && !Object.hasOwn(FOOTER_ICONS, link.icon)) throw new TypeError(`site-footer: unknown icon ${link.icon}`);
+        return { ...anchor('link', `links[${index}]`, [], link), icon: link.icon === undefined ? undefined : FOOTER_ICONS[link.icon] };
+      }),
+    ],
     // Hidden from assistive technology, which lists the links anyway.
     divider: [
       ['class', 'site-footer__divider'],

@@ -99,6 +99,22 @@ const { dark, toggle } = useThemeOverride('my-site-theme');
 Style the page from `<html data-theme="light|dark">`, falling back to
 `prefers-color-scheme` when it is absent.
 
+## Demo line and product view
+
+`demo: { label: 'Demo', note: '…' }` adds a line under the header on a demo.
+A product page shows the KHE frame only when the visit came through
+khe.ee, else its own header: the title, the toggle and the switcher
+([estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)).
+It passes `product: { root: '/my-app/' }` beside its `context` title, gives the footer a
+`home: { label: 'KHE.ee', href: 'https://khe.ee/' }` link, and puts the
+view script into `<head>` before the first stylesheet:
+
+```js
+import { viewInitScript } from '@khelias/ui/view';
+
+const head = `<script>${viewInitScript('/my-app/')}</script>`;
+```
+
 ## Footer
 
 Load `@khelias/ui/site-footer.css`, then render with either renderer; the

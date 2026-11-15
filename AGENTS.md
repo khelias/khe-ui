@@ -180,8 +180,9 @@ defaults, and every dot at 3:1 on the family paper and surface of its theme
 through `var()` only. The toggle uses the switcher's tokens.
 
 The menu opens in the top layer at `position: fixed`, just below the inner
-row and over a demo line (the heights `--host-h` defaults to, or `--host-h` itself with `fixed`), at
-the inner row's start, or under the button where anchor positioning works.
+row (the heights `--host-h` defaults to), so over a demo line; with `fixed`
+below `--host-h` itself, which takes in the demo line once the page
+measures it. It opens at the inner row's start, or under the button where anchor positioning works.
 Without the Popover API the button, the list and the slash are hidden. When
 the row is short of room the title ellipsizes and, in the frame view, at
 360px and below hides (at 520px and below when the React `actions` render

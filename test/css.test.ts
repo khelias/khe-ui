@@ -228,6 +228,16 @@ describe('site-header.css', () => {
     expect(contrast(colour('--khe-header-text-muted'), ground)).toBeGreaterThanOrEqual(4.5);
     const line = rules(css).find((rule) => rule.selector === '.site-header__demo');
     expect(line!.body).toMatch(/min-height: 2\.25rem;[\s\S]*padding: 0\.5rem 0;[\s\S]*border-top: 1px solid var\(--khe-header-border\);[\s\S]*background: var\(--khe-header-demo-bg\);/);
+    expect(line!.body).toMatch(/font-size: 0\.8125rem;/);
+    const body = (selector: string, from = css) => rules(from).find((rule) => rule.selector === selector)!.body;
+    expect(body('.site-header__demo-inner')).toMatch(/gap: 0\.625rem;/);
+    expect(body('.site-header__demo-label')).toMatch(/flex-shrink: 0;[\s\S]*color: var\(--khe-header-text\);[\s\S]*font-weight: var\(--khe-header-title-weight\);/);
+    expect(body('.site-header__demo-text')).toMatch(/color: var\(--khe-header-text-muted\);/);
+    // The line's gutters are the row's, at both widths.
+    const narrow = /@media \(max-width: 520px\) \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? '';
+    const padding = (selector: string, from: string) => /padding: ([^;]+);/.exec(body(selector, from))![1]!.match(/max\([^()]*\([^()]*\)\)/g);
+    expect(padding('.site-header__demo-inner', css)).toEqual(padding('.site-header__inner', css));
+    expect(padding('.site-header__demo-inner', narrow)).toEqual(padding('.site-header__inner', narrow));
   });
 
   it('hides the mark, the rooms, the slash and the demo line in the product view, and keeps the title', () => {

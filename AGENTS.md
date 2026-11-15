@@ -142,7 +142,7 @@ reaches the switcher inside it. Apps set their palette on `.site-header`
 (and on a standalone `.language-switcher`), never on `:root`. The package
 loads no fonts. Its `:root` selectors pick the theme toggle's icon from
 `<html data-theme>` or the system setting, so the icon is right before any
-script runs, and set the dark values of the five room dots
+script runs, and set the dark values of the room dots
 (`--khe-header-room-<id>`) under `:root[data-theme="dark"]` and the dark
 media query, wrapped whole in `:where()` so an app's value on
 `.site-header` still wins; nothing else is set there

@@ -113,7 +113,7 @@ describe('site-header.css', () => {
     expect(css).not.toMatch(/@font-face|@import/);
   });
 
-  it('reads :root only for the theme icon and the dark dots, and sets only the five dots there', () => {
+  it('reads :root only for the theme icon and the dark dots, and sets only the room dots there', () => {
     const rooted = rules(css).filter((rule) => rule.selector.includes(':root'));
     expect(rooted.length).toBeGreaterThanOrEqual(6);
     for (const rule of rooted) {

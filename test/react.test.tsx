@@ -132,7 +132,7 @@ describe('SiteHeader rooms menu', () => {
   it('marks and checks the current room only', () => {
     const root = mount(<SiteHeader {...props} rooms={{ current: 'trips', locale: 'en', currentHref: '/' }} />);
     const items = [...root.querySelectorAll('a.site-header__room')];
-    expect(items).toHaveLength(5);
+    expect(items).toHaveLength(6);
     const current = items.filter((item) => item.getAttribute('aria-current') === 'true');
     expect(items.filter((item) => item.hasAttribute('aria-current'))).toEqual(current);
     expect(current.map((item) => item.getAttribute('data-khe-room'))).toEqual(['trips']);

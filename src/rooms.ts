@@ -3,7 +3,7 @@
 
 export type RoomLocale = 'et' | 'en';
 
-export const ROOM_IDS = ['home', 'games', 'house', 'trips', 'server'] as const;
+export const ROOM_IDS = ['home', 'games', 'house', 'trips', 'stories', 'server'] as const;
 
 export type RoomId = (typeof ROOM_IDS)[number];
 
@@ -35,6 +35,12 @@ export const ROOMS: readonly Room[] = [
     name: { et: 'Reisipäevik', en: 'Travel journal' },
     note: { et: 'Reisid kaardil, demo', en: 'Trips on a map, a demo' },
     href: 'https://khe.ee/trips/',
+  },
+  {
+    id: 'stories',
+    name: { et: 'Jutud', en: 'Stories' },
+    note: { et: 'Unejutud, ette loetud', en: 'Bedtime stories, read aloud' },
+    href: 'https://khe.ee/stories/',
   },
   {
     id: 'server',

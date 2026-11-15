@@ -114,7 +114,7 @@ describe('renderSiteHeader', () => {
       'strong.site-header__title',
       'div.site-header__actions',
     ]);
-    expect(doc.querySelectorAll('nav.site-header__rooms-menu > ul > li.site-header__rooms-item > a.site-header__room')).toHaveLength(5);
+    expect(doc.querySelectorAll('nav.site-header__rooms-menu > ul > li.site-header__rooms-item > a.site-header__room')).toHaveLength(6);
     expect(doc.querySelector('.site-header__rooms > .site-header__rooms-name:first-child + svg.site-header__rooms-chevron:last-child')).not.toBeNull();
     expect(doc.querySelectorAll('.site-header__actions > div.language-switcher[role="group"] > button[type="button"]')).toHaveLength(2);
     expect(doc.querySelector('.site-header__theme')).toBeNull();
@@ -175,12 +175,13 @@ describe('renderSiteHeader', () => {
   it('lists every room in order, with the current one marked and checked', () => {
     const doc = parse(renderSiteHeader(fixtures['rooms and a title']!));
     const items = [...doc.querySelectorAll('a.site-header__room')];
-    expect(items.map((item) => item.getAttribute('data-khe-room'))).toEqual(['home', 'games', 'house', 'trips', 'server']);
+    expect(items.map((item) => item.getAttribute('data-khe-room'))).toEqual(['home', 'games', 'house', 'trips', 'stories', 'server']);
     expect(items.map((item) => item.getAttribute('href'))).toEqual([
       'https://khe.ee/?lang=et',
       'https://games.khe.ee/?lang=et',
       'https://khe.ee/ha/?lang=et',
       'https://khe.ee/trips/?lang=et',
+      'https://khe.ee/stories/?lang=et',
       'https://khe.ee/architecture/?lang=et',
     ]);
     expect(items.filter((item) => item.hasAttribute('aria-current')).map((item) => item.getAttribute('data-khe-room'))).toEqual(['games']);
@@ -191,6 +192,7 @@ describe('renderSiteHeader', () => {
       'Mängud, Õppemängud ja AI Seiklus',
       'Koduautomaatika, Maja juhtimine, demo',
       'Reisipäevik, Reisid kaardil, demo',
+      'Jutud, Unejutud, ette loetud',
       'Koduserver, Kuidas see kõik töötab',
     ]);
     // The labels carry the commas; the text holds the visible words only.

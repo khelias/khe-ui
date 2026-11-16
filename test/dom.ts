@@ -6,7 +6,7 @@ export function setSystem(scheme: 'light' | 'dark') {
   window.dispatchEvent(new Event('resize'));
 }
 
-/** The string renderers indent; React writes no whitespace between tags. */
-export const normalise = (html: string) => html.replace(/>\s+</g, '><').trim();
+/** The string renderers indent on their own lines; React writes none. A space on a line stays. */
+export const normalise = (html: string) => html.replace(/>\s*\n\s*</g, '><').trim();
 
 export const parse = (html: string) => new DOMParser().parseFromString(html, 'text/html');

@@ -247,9 +247,19 @@ html:has(.site-header--fixed) {
   font-weight: var(--khe-header-title-weight);
 }
 
-.site-header__demo-text {
+.site-header__demo-body {
   min-width: 0;
+}
+
+.site-header__demo-text {
   color: var(--khe-header-text-muted);
+}
+
+/* After the sentence, inline, so it wraps whole under the text rather than splitting. */
+.site-header__demo-link {
+  color: var(--khe-header-text);
+  text-decoration: underline;
+  white-space: nowrap;
 }
 
 /* In the top layer, so the header's own stacking and overflow do not clip it. It opens
@@ -535,6 +545,7 @@ html:has(.site-header--fixed) {
 .site-header__rooms:focus-visible,
 .site-header__title:focus-visible,
 .site-header__theme:focus-visible,
+.site-header__demo-link:focus-visible,
 .language-switcher button:focus-visible {
   outline: 2px solid var(--khe-header-focus);
   outline-offset: 2px;

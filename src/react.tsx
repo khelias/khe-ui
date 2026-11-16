@@ -117,7 +117,15 @@ export function SiteHeader<Code extends string = string>(options: SiteHeaderProp
         <p {...props(demo.line)}>
           <span className="site-header__demo-inner">
             <strong {...props(demo.label.attrs)}>{demo.label.text}</strong>
-            <span {...props(demo.text.attrs)}>{demo.text.text}</span>
+            <span className="site-header__demo-body">
+              <span {...props(demo.text.attrs)}>{demo.text.text}</span>
+              {demo.link ? (
+                <>
+                  {' '}
+                  <a {...props(demo.link.attrs)}>{demo.link.text}</a>
+                </>
+              ) : null}
+            </span>
           </span>
         </p>
       ) : null}

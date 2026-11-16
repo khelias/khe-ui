@@ -46,6 +46,13 @@ const fixtures: Record<string, SiteHeaderOptions> = {
     product: { root: '/stories/' },
     attrs: { demoLabel: { 'data-i18n': 'headerDemo' }, demoText: { 'data-i18n': 'headerDemoNoteStories', lang: 'et' } },
   },
+  'demo with a link': {
+    ...base,
+    rooms: { current: 'stories', locale: 'en' },
+    context: { title: 'Stories' },
+    demo: { label: 'Demo', note: 'Some stories.', link: { href: 'https://stories.khe.ee/?lang=en&x="1"', label: 'For family →' } },
+    attrs: { demoLink: { 'data-i18n': 'headerDemoLink', 'data-link': 'family' } },
+  },
   'product without demo': { ...base, rooms: games, context: { title: 'Tarkade Mängud' }, product: { root: '/study/' } },
   'every attrs part': {
     ...base,
@@ -119,8 +126,9 @@ describe('renderSiteHeader', () => {
     expect(html).toContain(
       '<p class="site-header__demo" role="note"><span class="site-header__demo-inner">' +
         '<strong class="site-header__demo-label" data-i18n="headerDemo">Demo</strong>' +
-        '<span class="site-header__demo-text" data-i18n="headerDemoNoteStories" lang="et">Mõned jutud &quot;kogust&quot; &amp; &lt;muu&gt;</span></span></p>',
+        '<span class="site-header__demo-body"><span class="site-header__demo-text" data-i18n="headerDemoNoteStories" lang="et">Mõned jutud &quot;kogust&quot; &amp; &lt;muu&gt;</span></span></span></p>',
     );
+    expect(parse(html).querySelector('.site-header__demo-link')).toBeNull();
     const header = parse(html).querySelector('header')!;
     expect([...header.children].map((child) => `${child.localName}.${child.className}`)).toEqual(['div.site-header__inner', 'p.site-header__demo']);
     const product = parse(renderSiteHeader(fixtures['product without demo']!)).querySelector('header')!;
@@ -131,6 +139,26 @@ describe('renderSiteHeader', () => {
       expect(plain.hasAttribute('data-khe-product')).toBe(false);
       expect(plain.querySelector('.site-header__demo')).toBeNull();
     }
+  });
+
+  it('puts the demo link in the body after the sentence, a space between', () => {
+    const html = normalise(renderSiteHeader(fixtures['demo with a link']!));
+    expect(html).toContain(
+      '<span class="site-header__demo-body"><span class="site-header__demo-text">Some stories.</span> ' +
+        '<a class="site-header__demo-link" href="https://stories.khe.ee/?lang=en&amp;x=&quot;1&quot;" data-i18n="headerDemoLink" data-link="family">For family →</a></span>',
+    );
+    const inner = parse(html).querySelector('.site-header__demo-inner')!;
+    expect([...inner.children].map((child) => child.className)).toEqual(['site-header__demo-label', 'site-header__demo-body']);
+    expect(inner.querySelector('.site-header__demo-body')!.textContent).toBe('Some stories. For family →');
+  });
+
+  it('refuses attrs.demoLink without a demo link, and a javascript: demo link', () => {
+    const demo = { label: 'Demo', note: 'Made up.' };
+    const link = { href: 'https://example.org/', label: 'Go' };
+    expect(() => renderSiteHeader({ ...base, rooms: games, demo, attrs: { demoLink: { 'data-x': 'y' } } })).toThrow(/demoLink without demo\.link/);
+    expect(() => renderSiteHeader({ ...base, rooms: games, attrs: { demoLink: { 'data-x': 'y' } } })).toThrow(/demoLink without demo\.link/);
+    expect(() => renderSiteHeader({ ...base, rooms: games, demo: { ...demo, link }, attrs: { demoLink: { href: 'x' } } })).toThrow(/only data-\*/);
+    expect(() => renderSiteHeader({ ...base, rooms: games, demo: { ...demo, link: { ...link, href: ' javascript:alert(1)' } } })).toThrow(/demo\.link href is a javascript: URL/);
   });
 
   it('refuses a demo without rooms, its attrs without a demo, and a bad product root', () => {

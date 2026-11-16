@@ -232,7 +232,11 @@ describe('site-header.css', () => {
     const body = (selector: string, from = css) => rules(from).find((rule) => rule.selector === selector)!.body;
     expect(body('.site-header__demo-inner')).toMatch(/gap: 0\.625rem;/);
     expect(body('.site-header__demo-label')).toMatch(/flex-shrink: 0;[\s\S]*color: var\(--khe-header-text\);[\s\S]*font-weight: var\(--khe-header-title-weight\);/);
+    expect(body('.site-header__demo-body')).toMatch(/min-width: 0;/);
     expect(body('.site-header__demo-text')).toMatch(/color: var\(--khe-header-text-muted\);/);
+    // The link reads like the label's colour, underlined, and wraps whole.
+    expect(body('.site-header__demo-link')).toMatch(/color: var\(--khe-header-text\);[\s\S]*text-decoration: underline;[\s\S]*white-space: nowrap;/);
+    expect(rules(css).find((rule) => rule.selector.includes('.site-header__demo-link:focus-visible'))!.body).toMatch(/outline: 2px solid var\(--khe-header-focus\);/);
     // The line's gutters are the row's, at both widths.
     const narrow = /@media \(max-width: 520px\) \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? '';
     const padding = (selector: string, from: string) => /padding: ([^;]+);/.exec(body(selector, from))![1]!.match(/max\([^()]*\([^()]*\)\)/g);

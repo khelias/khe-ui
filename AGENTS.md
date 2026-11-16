@@ -17,7 +17,9 @@ puts the theme toggle, the theme rules and the footer here, and
 [estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)
 the rooms menu, the room list, the room accents and the design check, and
 [estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)
-the demo line and the product view of a product page.
+the demo line and the product view of a product page, and
+[estate ADR-034](https://github.com/khelias/khe-architecture/blob/main/decisions/034-the-demo-line-links-the-real-site.md)
+the demo line's link to the real site.
 
 npm, Node 26 (`.nvmrc`, `engine-strict`), TypeScript 7 compiled by plain
 `tsc`, Vitest with happy-dom for the tests that need a DOM. No runtime
@@ -125,10 +127,15 @@ the tests and the consumers' checks:
   inside the `header`: `p.site-header__demo` with `role="note"`, holding
   `span.site-header__demo-inner`, which holds
   `strong.site-header__demo-label` (`label`) and
-  `span.site-header__demo-text` (`note`)
+  `span.site-header__demo-body`, holding `span.site-header__demo-text`
+  (`note`) and, with `demo.link`, a space and `a.site-header__demo-link`
+  with `href` (through the same `javascript:` check as the other hrefs;
+  estate ADR-034). The space is real text, not indentation, so the parity
+  test's `normalise` strips only whitespace across a line break
 - `attrs` adds attributes after each part's own: `brand`, `rooms` (the
   button, only with `rooms`), `title`, `theme` (only with `themeToggle`),
-  `switcher`, and `demoLabel` and `demoText` (only with `demo`), and each
+  `switcher`, and `demoLabel` and `demoText` (only with `demo`) and
+  `demoLink` (only with `demo.link`), and each
   locale's `attrs` on its button. Only `data-*`, `aria-*`, `id`,
   `lang`, `dir`, `title` and `translate`, never one the part sets itself
 
@@ -169,8 +176,9 @@ only `display` on the mark, the rooms button and list, the slash and the
 demo line, and the title's size (estate ADR-030); the footer's hides the
 home link and the divider after it outside that view. The demo line sits
 on `--khe-header-demo-bg`, under the header's border, its label in
-`--khe-header-text`, its sentence in `--khe-header-text-muted`, both 4.5:1
-or more on the default. The menu has `--khe-header-menu-bg`, `-border`, `-shadow` and
+`--khe-header-text`, its sentence in `--khe-header-text-muted`, its link in
+`--khe-header-text`, underlined and `nowrap` so it wraps whole after the
+sentence, all 4.5:1 or more on the default. The menu has `--khe-header-menu-bg`, `-border`, `-shadow` and
 `-current-bg`; its names use `--khe-header-text`, its notes
 `--khe-header-text-muted`. The header fills its container; a page that
 puts it inside a padded container makes it full-bleed itself. Muted text,

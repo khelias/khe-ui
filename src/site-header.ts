@@ -17,6 +17,7 @@ export interface SiteHeaderOptions<Code extends string = string> extends SiteHea
  */
 export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions<Code>): string {
   const { header, brand, rooms, slash, title, theme, switcher, demo, buttons } = prepareHeader(options);
+  const link = demo?.link ? ` ${tag('a', demo.link.attrs)}${escapeHtml(demo.link.text)}</a>` : '';
   const lines = [
     tag('header', header),
     '  <div class="site-header__inner">',
@@ -53,7 +54,9 @@ export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions
           `  ${tag('p', demo.line)}`,
           '    <span class="site-header__demo-inner">',
           `      ${tag('strong', demo.label.attrs)}${escapeHtml(demo.label.text)}</strong>`,
-          `      ${tag('span', demo.text.attrs)}${escapeHtml(demo.text.text)}</span>`,
+          '      <span class="site-header__demo-body">',
+          `        ${tag('span', demo.text.attrs)}${escapeHtml(demo.text.text)}</span>${link}`,
+          '      </span>',
           '    </span>',
           '  </p>',
         ]

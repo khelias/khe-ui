@@ -104,6 +104,8 @@ export interface SiteHeaderDemo {
   readonly label: string;
   /** One sentence. */
   readonly note: string;
+  /** A link to the real site after the sentence, labelled for the family (estate ADR-034). */
+  readonly link?: { readonly href: string; readonly label: string };
 }
 
 /**
@@ -126,6 +128,8 @@ export interface SiteHeaderPartAttrs {
   readonly demoLabel?: Attrs;
   /** The demo line's sentence, only with `demo`. */
   readonly demoText?: Attrs;
+  /** The demo line's link, only with `demo.link`. */
+  readonly demoLink?: Attrs;
 }
 
 /**
@@ -152,7 +156,7 @@ export interface SiteHeaderBaseOptions<Node, Code extends string = string> {
   readonly attrs?: SiteHeaderPartAttrs;
 }
 
-const HEADER_PARTS = ['brand', 'rooms', 'title', 'theme', 'switcher', 'demoLabel', 'demoText'] as const;
+const HEADER_PARTS = ['brand', 'rooms', 'title', 'theme', 'switcher', 'demoLabel', 'demoText', 'demoLink'] as const;
 
 function prepareRooms(rooms: SiteHeaderRooms, attrs: Attrs | undefined) {
   const current = roomById(rooms.current);
@@ -221,6 +225,7 @@ export function prepareHeader<Node, Code extends string>(options: SiteHeaderBase
   // The product view shows only the title on the left, so a product needs one.
   if (product && !context) throw new TypeError('site-header: product without context');
   if ((attrs.demoLabel || attrs.demoText) && !demo) throw new TypeError('site-header: attrs.demoLabel or attrs.demoText without demo');
+  if (attrs.demoLink && !demo?.link) throw new TypeError('site-header: attrs.demoLink without demo.link');
   const part = (name: string, own: Pairs, extra: Attrs | undefined) => withAttrs('site-header', name, own, extra);
   const headerClass = fixed ? 'site-header site-header--fixed' : 'site-header';
   const titleHref: Pairs = context?.href === undefined ? [] : [['href', checkedHref('site-header', 'context', context.href)]];
@@ -277,6 +282,17 @@ export function prepareHeader<Node, Code extends string>(options: SiteHeaderBase
       ] as Pairs,
       label: { attrs: part('demoLabel', [['class', 'site-header__demo-label']], attrs.demoLabel), text: demo.label },
       text: { attrs: part('demoText', [['class', 'site-header__demo-text']], attrs.demoText), text: demo.note },
+      link: demo.link && {
+        attrs: part(
+          'demoLink',
+          [
+            ['class', 'site-header__demo-link'],
+            ['href', checkedHref('site-header', 'demo.link', demo.link.href)],
+          ],
+          attrs.demoLink,
+        ),
+        text: demo.link.label,
+      },
     },
     buttons: locales.map(({ code, label, attrs: extra }) => ({
       code,

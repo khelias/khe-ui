@@ -101,7 +101,10 @@ Style the page from `<html data-theme="light|dark">`, falling back to
 
 ## Demo line and product view
 
-`demo: { label: 'Demo', note: '…' }` adds a line under the header on a demo.
+`demo: { label: 'Demo', note: '…' }` adds a line under the header on a demo;
+`link: { href, label }` in it adds a link to the real site after the
+sentence
+([estate ADR-034](https://github.com/khelias/khe-architecture/blob/main/decisions/034-the-demo-line-links-the-real-site.md)).
 A product page shows the KHE frame when the tab came from khe.ee, the games
 hub or another page of its own origin outside the product, and keeps it in
 that tab for 30 minutes; otherwise, and always as an installed app, it shows

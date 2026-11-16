@@ -11,8 +11,8 @@ GitHub and LinkedIn marks and a line of text.
 KHE apps are separate repos on separate stacks that share one family
 chrome
 ([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)).
-They used to build the header four times and the footer three times, and fixes reached one copy at a
-time. Now the anatomy, sizes and states live here, and each app sets the
+A header or footer built in each app drifts, and a fix reaches one copy at a
+time, so the anatomy, sizes and states live here, and each app sets the
 family colours through CSS custom properties and moves to a new release
 when it chooses
 ([estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md)).
@@ -102,9 +102,10 @@ Style the page from `<html data-theme="light|dark">`, falling back to
 ## Demo line and product view
 
 `demo: { label: 'Demo', note: '…' }` adds a line under the header on a demo.
-A product page shows the KHE frame only when the tab came from khe.ee,
-the games hub or another page of its own site, else its own header: the
-title, the toggle and the switcher
+A product page shows the KHE frame when the tab came from khe.ee, the games
+hub or another page of its own origin outside the product, and keeps it in
+that tab for 30 minutes; otherwise, and always as an installed app, it shows
+its own header: the title, the toggle and the switcher
 ([estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)).
 It passes `product: { root: '/my-app/' }` beside its `context` title, gives the footer a
 `home: { label: 'KHE.ee', href: 'https://khe.ee/' }` link, and puts the

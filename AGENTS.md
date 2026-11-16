@@ -14,7 +14,7 @@ presentation only, released with semver, pinned in each app, and never
 automerged there.
 [Estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)
 puts the theme toggle, the theme rules and the footer here, and
-[estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)
+[estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md)
 the rooms menu, the room list, the room accents and the design check, and
 [estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)
 the demo line and the product view of a product page, and
@@ -209,7 +209,7 @@ The package carries the anatomy; apart from the room dots its defaults are
 not the KHE family's values. The dots are the room accents of khe-sites'
 `DESIGN.md` in both themes, which khe-sites' check compares; each consumer
 sets the other family values from `DESIGN.md` on `.site-header`
-([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)).
+([estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md)).
 
 The decisions behind this shape: [docs/adr/001](docs/adr/001-light-dom-markup-and-custom-properties.md)
 and, for the rooms menu, the theme toggle and the footer,
@@ -218,7 +218,7 @@ and, for the rooms menu, the theme toggle and the footer,
 ## The design check
 
 `khe-design-lint [--config <path>] [--root <dir>] [--write-baseline]`
-(estate ADR-021 point 8). The app's `khe-design-lint.json` has `include`
+(estate ADR-035 point 8). The app's `khe-design-lint.json` has `include`
 globs, optional `exclude` globs and `content` globs, and the `baseline`
 path, relative to the config; globs are relative to the root (default the
 working directory). Test files, `node_modules`, `dist`, `output` and hidden
@@ -268,7 +268,7 @@ app merges its own update, because no consumer automerges this package.
    functions are presentation
    ([estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)),
    and so are the room list and the design check
-   ([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md))
+   ([estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md))
    and the view decision of a product page
    ([estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)).
 2. **No runtime dependencies.** React stays an optional peer dependency.

@@ -10,7 +10,7 @@ GitHub and LinkedIn marks and a line of text.
 [khe.ee](https://khe.ee), [KHE Games](https://games.khe.ee) and the other
 KHE apps are separate repos on separate stacks that share one family
 chrome
-([estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md)).
+([estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md)).
 A header or footer built in each app drifts, and a fix reaches one copy at a
 time, so the anatomy, sizes and states live here, and each app sets the
 family colours through CSS custom properties and moves to a new release

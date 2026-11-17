@@ -81,8 +81,8 @@ Node built-ins only ([docs/adr/005](docs/adr/005-design-check-as-a-node-bin.md))
 - `test/` - parity of the two renderers, the markup contract, escaping,
   attrs, React behaviour, the theme rules, the rooms module, CSS tokens,
   specificity and contrast, and the design check on fixture trees and
-  temporary git repos; `test/selectors.ts` holds the narrow rule's
-  selector, which the CSS test and the React test share
+  temporary git repos; `test/selectors.ts` holds the two narrow rules'
+  selectors, which the CSS test and the React test share
 
 ## Markup contract
 
@@ -191,10 +191,13 @@ The menu opens in the top layer at `position: fixed`, just below the inner
 row (the heights `--host-h` defaults to), so over a demo line; with `fixed`
 below `--host-h` itself, which takes in the demo line once the page
 measures it. It opens at the inner row's start, or under the button where anchor positioning works.
-Without the Popover API the button, the list and the slash are hidden. When
-the row is short of room the title ellipsizes and, in the frame view, at
-360px and below hides (at 520px and below when the React `actions` render
-anything), then the room name ellipsizes; the mark, toggle and switcher never shrink. The list's
+Without the Popover API the button, the list and the slash are hidden. In
+the frame view on a phone the app's title keeps the row: above 360px and up
+to 520px the room's name hides and its chevron stays a 44px button, unless
+the React `actions` render anything, when the title and the slash hide
+instead (at 520px and below). The title ellipsizes first and at 360px and
+below hides, the room's name back and ellipsizing; the mark, toggle and
+switcher never shrink. The list's
 `li` rules have two classes, so a page's `li` rules, scoped by one class or
 none, do not reach them; its `ul` rule has one class and wins over a page's
 element rules.

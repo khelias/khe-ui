@@ -156,9 +156,10 @@ html:has(.site-header--fixed) {
   transform: translateY(0.22em);
 }
 
-/* The room's name and the app's title share a type. When the row is short of room,
-   the title gives way first (it shrinks a thousand times faster, and hides at 360px,
-   or at 520px beside an app's action), then the room name; the chevron stays. */
+/* The room's name and the app's title share a type. On a phone the app's name leads:
+   above 360px and up to 520px the room's name hides and its chevron stays, unless an
+   app's own action takes the title's place. The title ellipsizes first (it shrinks a
+   thousand times faster) and hides at 360px, where the room's name is back. */
 .site-header__rooms,
 .site-header__title {
   min-width: 0;
@@ -205,10 +206,12 @@ html:has(.site-header--fixed) {
   transform: rotate(180deg);
 }
 
+/* Taps on it reach the rooms button, whose target it can overlap on a phone. */
 .site-header__slash {
   flex-shrink: 0;
   color: var(--khe-header-text-muted);
   font-size: 0.9rem;
+  pointer-events: none;
 }
 
 /* Never a sliver: at its narrowest it is a letter and an ellipsis. */
@@ -598,6 +601,20 @@ html:has(.site-header--fixed) {
      the room need the row too. */
   :where(:root:not([data-khe-view="product"])) .site-header:has(.site-header__actions > :not(.site-header__theme, .language-switcher)) :is(.site-header__title, .site-header__slash) {
     display: none;
+  }
+}
+
+/* The button keeps a 44px target with its chevron alone. Its margins hand the empty
+   space around the chevron back to the row; the left one stops short of the mark. */
+@media (360px < width <= 520px) {
+  :where(:root:not([data-khe-view="product"])) .site-header:has(.site-header__title):not(:has(.site-header__actions > :not(.site-header__theme, .language-switcher))) .site-header__rooms-name {
+    display: none;
+  }
+
+  :where(:root:not([data-khe-view="product"])) .site-header:has(.site-header__title):not(:has(.site-header__actions > :not(.site-header__theme, .language-switcher))) .site-header__rooms {
+    min-width: 2.75rem;
+    justify-content: center;
+    margin-inline: -0.5rem -0.875rem;
   }
 }
 

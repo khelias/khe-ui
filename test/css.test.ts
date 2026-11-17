@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ROOM_IDS } from '../src/rooms.js';
-import { ACTION_HIDES_TITLE } from './selectors.js';
+import { ACTION_HIDES_TITLE, TITLE_WITHOUT_ACTION } from './selectors.js';
 
 const read = (name: string) => readFileSync(new URL(`../src/${name}`, import.meta.url), 'utf8');
 const css = read('site-header.css');
@@ -19,6 +19,9 @@ const defaults = defaultsOf(css, '--khe-header-');
 const footerDefaults = defaultsOf(footerCss, '--khe-footer-');
 
 // Every rule as its selector and body, comments dropped, media query wrappers skipped.
+/** The body of the top-level @media block with this exact query. */
+const mediaBlock = (query: string) => new RegExp(`@media \\(${query.replace(/[()]/g, '\\$&')}\\) \\{([\\s\\S]*?)\\n\\}`).exec(css)?.[1] ?? '';
+
 const rules = (source: string) =>
   [...source.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(([, selector, body]) => ({
     selector: selector!.trim(),
@@ -121,7 +124,9 @@ describe('site-header.css', () => {
     for (const rule of rooted) {
       if (rule.selector.includes('data-khe-view')) {
         expect(rule.body).not.toContain('--');
-        expect([...rule.body.matchAll(/([a-z-]+):/g)].map(([, name]) => name)).toEqual([expect.stringMatching(/^(?:display|font-size)$/)]);
+        const names = [...rule.body.matchAll(/([a-z-]+):/g)].map(([, name]) => name ?? '');
+        expect(names).not.toHaveLength(0);
+        expect(names.every((name) => /^(?:display|font-size|min-width|justify-content|margin-inline)$/.test(name))).toBe(true);
         continue;
       }
       if (DARK_DOT_SELECTORS.includes(rule.selector)) {
@@ -211,10 +216,23 @@ describe('site-header.css', () => {
   });
 
   it('hides the title and the slash beside an app\'s action at 520px and below', () => {
-    const block = /@media \(max-width: 520px\) \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? '';
+    const block = mediaBlock('max-width: 520px');
     const rule = rules(block).find((candidate) => candidate.selector.includes(':has(.site-header__actions'));
     expect(rule!.selector).toBe(ACTION_HIDES_TITLE);
     expect(rule!.body.trim()).toBe('display: none;');
+  });
+
+  it('hides the room\'s name beside an app\'s title above 360px and up to 520px, and keeps the button 44px', () => {
+    const block = mediaBlock('360px < width <= 520px');
+    expect(rules(block).map((rule) => [rule.selector, rule.body.trim()])).toEqual([
+      [`${TITLE_WITHOUT_ACTION} .site-header__rooms-name`, 'display: none;'],
+      [`${TITLE_WITHOUT_ACTION} .site-header__rooms`, 'min-width: 2.75rem;\n    justify-content: center;\n    margin-inline: -0.5rem -0.875rem;'],
+    ]);
+    expect(rules(css).find((rule) => rule.selector === '.site-header__rooms')!.body).toMatch(/min-height: 2\.75rem;/);
+    const narrowest = mediaBlock('max-width: 360px');
+    expect(rules(narrowest).map((rule) => [rule.selector, rule.body.trim()])).toEqual([
+      [':where(:root:not([data-khe-view="product"])) :is(.site-header__title, .site-header__slash)', 'display: none;'],
+    ]);
   });
 
   it('keeps every room item a 44px target', () => {
@@ -238,7 +256,7 @@ describe('site-header.css', () => {
     expect(body('.site-header__demo-link')).toMatch(/color: var\(--khe-header-text\);[\s\S]*text-decoration: underline;[\s\S]*white-space: nowrap;/);
     expect(rules(css).find((rule) => rule.selector.includes('.site-header__demo-link:focus-visible'))!.body).toMatch(/outline: 2px solid var\(--khe-header-focus\);/);
     // The line's gutters are the row's, at both widths.
-    const narrow = /@media \(max-width: 520px\) \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? '';
+    const narrow = mediaBlock('max-width: 520px');
     const padding = (selector: string, from: string) => /padding: ([^;]+);/.exec(body(selector, from))![1]!.match(/max\([^()]*\([^()]*\)\)/g);
     expect(padding('.site-header__demo-inner', css)).toEqual(padding('.site-header__inner', css));
     expect(padding('.site-header__demo-inner', narrow)).toEqual(padding('.site-header__inner', narrow));
@@ -252,7 +270,7 @@ describe('site-header.css', () => {
     );
     expect(view.find((rule) => rule.selector === ':root[data-khe-view="product"] .site-header__title')!.body.trim()).toBe('font-size: 1.0625rem;');
     // The narrow rules that hide the title make room for the mark and the room, so the frame alone has them.
-    const narrow = /@media \(max-width: 360px\) \{([\s\S]*?)\n\}/.exec(css)?.[1] ?? '';
+    const narrow = mediaBlock('max-width: 360px');
     expect(rules(narrow).map((rule) => rule.selector)).toEqual([':where(:root:not([data-khe-view="product"])) :is(.site-header__title, .site-header__slash)']);
     expect(ACTION_HIDES_TITLE.startsWith(':where(:root:not([data-khe-view="product"])) ')).toBe(true);
     expect(specificity(hidden!.selector)).toBeGreaterThan(specificity('.site-header__rooms'));

@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SiteHeader, type SiteHeaderProps, useThemeOverride } from '../src/react.js';
 import { parse, setSystem } from './dom.js';
-import { APP_ACTION } from './selectors.js';
+import { APP_ACTION, TITLED_HEADER } from './selectors.js';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -160,6 +160,20 @@ describe('SiteHeader theme toggle', () => {
     const themeToggle = { label: 'T', dark: false, onToggle: () => {} };
     expect(found(<SiteHeader {...props} themeToggle={themeToggle} actions={<button type="button" className="add">+</button>} />)).toEqual(['add']);
     expect(found(<SiteHeader {...props} themeToggle={themeToggle} />)).toEqual([]);
+  });
+
+  it('finds the header whose room name gives way to the title: a title and no action of its own', () => {
+    // As above, happy-dom cannot match the :not(:has(...)) part, so it is checked through its argument.
+    const hides = (element: React.ReactElement) => {
+      const html = parse(renderToStaticMarkup(element));
+      return html.querySelector(APP_ACTION) ? 0 : html.querySelectorAll(`${TITLED_HEADER} .site-header__rooms-name`).length;
+    };
+    const rooms = { current: 'games', locale: 'en' } as const;
+    const themeToggle = { label: 'T', dark: false, onToggle: () => {} };
+    expect(hides(<SiteHeader {...props} rooms={rooms} themeToggle={themeToggle} />)).toBe(1);
+    const { context: _context, ...hub } = props;
+    expect(hides(<SiteHeader {...hub} rooms={rooms} themeToggle={themeToggle} />)).toBe(0);
+    expect(hides(<SiteHeader {...props} rooms={rooms} themeToggle={themeToggle} actions={<button type="button" className="add">+</button>} />)).toBe(0);
   });
 
   it('renders the toggle after the actions and before the switcher', () => {

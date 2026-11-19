@@ -41,6 +41,7 @@
   --khe-header-room-house: #1f5fa8;
   --khe-header-room-trips: #b75a3a;
   --khe-header-room-stories: #a3336f;
+  --khe-header-room-workshop: #5d6b16;
   --khe-header-room-server: #246b5f;
 
   --khe-header-switcher-radius: 8px;
@@ -62,6 +63,7 @@
   --khe-header-room-house: #6fe3ff;
   --khe-header-room-trips: #d9764f;
   --khe-header-room-stories: #f08cc0;
+  --khe-header-room-workshop: #b8c75a;
   --khe-header-room-server: #7fc8b8;
 }
 
@@ -72,6 +74,7 @@
     --khe-header-room-house: #6fe3ff;
     --khe-header-room-trips: #d9764f;
     --khe-header-room-stories: #f08cc0;
+    --khe-header-room-workshop: #b8c75a;
     --khe-header-room-server: #7fc8b8;
   }
 }
@@ -343,6 +346,7 @@ html:has(.site-header--fixed) {
 .site-header__room[data-khe-room="house"] > .site-header__room-dot { background: var(--khe-header-room-house); }
 .site-header__room[data-khe-room="trips"] > .site-header__room-dot { background: var(--khe-header-room-trips); }
 .site-header__room[data-khe-room="stories"] > .site-header__room-dot { background: var(--khe-header-room-stories); }
+.site-header__room[data-khe-room="workshop"] > .site-header__room-dot { background: var(--khe-header-room-workshop); }
 .site-header__room[data-khe-room="server"] > .site-header__room-dot { background: var(--khe-header-room-server); }
 
 .site-header__room-name {

@@ -12,7 +12,7 @@ const FAMILY_HEX: ReadonlySet<string> = new Set([
   '#363b3d', '#c4cac7', '#5f6567', '#8a928f', '#e3e5e5', '#232827', '#c3c7c7', '#3a413f',
   '#d7263d', '#fb4b57', '#246b5f', '#7fc8b8', '#b75a3a', '#d9764f', '#93411f', '#e8926a',
   '#1f5fa8', '#6fe3ff', '#e8eef6', '#060c1b', '#8a5a12', '#d9a441', '#6a3d8f', '#b59ad6',
-  '#2f6b3a', '#7cc28a', '#a3336f', '#f08cc0',
+  '#2f6b3a', '#7cc28a', '#a3336f', '#f08cc0', '#5d6b16', '#b8c75a',
 ]);
 
 // A `prose` matcher reads the line without its comments.

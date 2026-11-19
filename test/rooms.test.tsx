@@ -18,8 +18,8 @@ const header = (currentHref?: string) =>
   );
 
 describe('ROOMS', () => {
-  it('lists the six rooms in order', () => {
-    expect(ROOM_IDS).toEqual(['home', 'games', 'house', 'trips', 'stories', 'server']);
+  it('lists the seven rooms in order', () => {
+    expect(ROOM_IDS).toEqual(['home', 'games', 'house', 'trips', 'stories', 'workshop', 'server']);
     expect(ROOMS.map((room) => room.id)).toEqual([...ROOM_IDS]);
   });
 

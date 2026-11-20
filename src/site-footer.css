@@ -5,7 +5,7 @@
    link in the product view only (estate ADR-030). */
 
 :where(.site-footer) {
-  --khe-footer-font: 'Inter', system-ui, sans-serif;
+  --khe-footer-font: 'Familjen Grotesk', system-ui, sans-serif;
   --khe-footer-size: 0.75rem;
   --khe-footer-weight: 400;
   --khe-footer-text: #7f8a86;

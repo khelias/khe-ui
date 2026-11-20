@@ -9,7 +9,7 @@
 /* The defaults sit on the header and on a switcher outside one, not on the switcher
    inside, so values an app sets on .site-header reach it. */
 :where(.site-header, .language-switcher:not(.site-header *)) {
-  --khe-header-font: 'Inter', system-ui, sans-serif;
+  --khe-header-font: 'Familjen Grotesk', system-ui, sans-serif;
   --khe-header-title-font: var(--khe-header-font);
   --khe-header-max-width: 1180px;
   --khe-header-z: 60;

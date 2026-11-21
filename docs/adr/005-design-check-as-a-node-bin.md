@@ -1,11 +1,11 @@
 # ADR-005: The design check ships as a node-only bin beside the browser code, reading git through `git show`
 
 - **Status:** Accepted (2026-10-23)
-- **Related:** [ADR-001](001-light-dom-markup-and-custom-properties.md), [ADR-002](002-release-through-trusted-publishing.md), [estate ADR-021](https://github.com/khelias/khe-architecture/blob/main/decisions/021-family-shell-and-design-check.md), [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md)
+- **Related:** [ADR-001](001-light-dom-markup-and-custom-properties.md), [ADR-002](002-release-through-trusted-publishing.md), [estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md) (point 8), [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md)
 
 ## Context
 
-Estate ADR-021 point 8 puts a design check in this package: every web app
+Estate ADR-035 point 8 puts a design check in this package: every web app
 runs it in its lint, it counts presentation tells per file against a
 baseline the app commits, and the baseline only shrinks. Until now the
 package held browser code only: CSS, string renderers, React components

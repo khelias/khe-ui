@@ -1,4 +1,4 @@
-// The KHE rooms the header's rooms menu lists (estate ADR-018), in order. Imports
+// The KHE rooms the header's rooms menu lists (estate ADR-035 point 7), in order. Imports
 // nothing and touches no DOM at load, so khe-sites can serve dist/rooms.js as it is.
 
 export type RoomLocale = 'et' | 'en';

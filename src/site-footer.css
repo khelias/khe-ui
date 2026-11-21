@@ -2,7 +2,7 @@
    --khe-footer-* custom property; an app sets its values on .site-footer and
    places the footer itself (margins, padding, position on the page). The
    defaults match the header's. Loads no fonts. The :root selector shows the home
-   link in the product view only (estate ADR-030). */
+   link in the product view only (estate ADR-035 point 11). */
 
 :where(.site-footer) {
   --khe-footer-font: 'Familjen Grotesk', system-ui, sans-serif;

@@ -1,4 +1,4 @@
-// The family theme rule (estate ADR-017): a page follows the system setting, and a
+// The family theme rule (estate ADR-014 point 6): a page follows the system setting, and a
 // manual override lives on <html data-theme> and in localStorage under the consumer's
 // key. Imports nothing and touches no DOM at load, so a build can import it in Node
 // and khe-sites can serve dist/theme.js as it is.

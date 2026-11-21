@@ -12,14 +12,13 @@ allowed by
 [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md):
 presentation only, released with semver, pinned in each app, and never
 automerged there.
-[Estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)
-puts the theme toggle, the theme rules and the footer here, and
+The same ADR (points 6 and 7) puts the theme toggle, the theme rules and
+the footer here, and
 [estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md)
 the rooms menu, the room list, the room accents and the design check, and
-[estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)
-the demo line and the product view of a product page, and
-[estate ADR-034](https://github.com/khelias/khe-architecture/blob/main/decisions/034-the-demo-line-links-the-real-site.md)
-the demo line's link to the real site.
+(point 11) the demo line and the product view of a product page;
+[docs/adr/006](docs/adr/006-the-demo-line-links-the-real-site.md) adds the
+demo line's link to the real site.
 
 npm, Node 26 (`.nvmrc`, `engine-strict`), TypeScript 7 compiled by plain
 `tsc`, Vitest with happy-dom for the tests that need a DOM. No runtime
@@ -59,7 +58,7 @@ Node built-ins only ([docs/adr/005](docs/adr/005-design-check-as-a-node-bin.md))
   without re-rendering. Imports nothing and touches no DOM at load, like
   `theme.ts`: khe-sites copies `dist/rooms.js` as it is
 - `src/view.ts` - `viewInitScript(root)`, the inline pre-paint script of
-  a product page under `root` (estate ADR-030): it keeps the frame for 30
+  a product page under `root` (estate ADR-035 point 11): it keeps the frame for 30
   minutes after a load that came from a frame page, stored per tab in
   `sessionStorage` under `khe-view:<root>`, and otherwise, always when
   installed, sets `data-khe-view="product"` on `<html>`; and
@@ -130,7 +129,7 @@ the tests and the consumers' checks:
   `span.site-header__demo-body`, holding `span.site-header__demo-text`
   (`note`) and, with `demo.link`, a space and `a.site-header__demo-link`
   with `href` (through the same `javascript:` check as the other hrefs;
-  estate ADR-034). The space is real text, not indentation, so the parity
+  [docs/adr/006](docs/adr/006-the-demo-line-links-the-real-site.md)). The space is real text, not indentation, so the parity
   test's `normalise` strips only whitespace across a line break
 - `attrs` adds attributes after each part's own: `brand`, `rooms` (the
   button, only with `rooms`), `title`, `theme` (only with `themeToggle`),
@@ -173,7 +172,7 @@ media query, wrapped whole in `:where()` so an app's value on
 ([docs/adr/004](docs/adr/004-rooms-menu-as-a-native-popover.md) point 4).
 The product view's selectors, under `:root[data-khe-view="product"]`, set
 only `display` on the mark, the rooms button and list, the slash and the
-demo line, and the title's size (estate ADR-030); the footer's hides the
+demo line, and the title's size (estate ADR-035 point 11); the footer's hides the
 home link and the divider after it outside that view. The demo line sits
 on `--khe-header-demo-bg`, under the header's border, its label in
 `--khe-header-text`, its sentence in `--khe-header-text-muted`, its link in
@@ -268,12 +267,10 @@ app merges its own update, because no consumer automerges this package.
 
 1. **Presentation only.** No app state, no data fetching, no runtime or
    business logic (estate ADR-014). The stored theme choice and its DOM
-   functions are presentation
-   ([estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)),
-   and so are the room list and the design check
-   ([estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md))
-   and the view decision of a product page
-   ([estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)).
+   functions are presentation (estate ADR-014 point 6), and so are the
+   room list, the design check and the view decision of a product page
+   ([estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md)
+   points 7, 8 and 11).
 2. **No runtime dependencies.** React stays an optional peer dependency.
 3. **A public repo and a public package.** Nothing identifying, no house
    data.

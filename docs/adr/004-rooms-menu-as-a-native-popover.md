@@ -2,11 +2,11 @@
 
 - **Status:** Accepted (2026-10-20)
 - **Supersedes:** [ADR-003](003-theme-toggle-and-footer.md)
-- **Related:** [ADR-001](001-light-dom-markup-and-custom-properties.md), [estate ADR-018](https://github.com/khelias/khe-architecture/blob/main/decisions/018-rooms-menu-in-the-shared-header.md)
+- **Related:** [ADR-001](001-light-dom-markup-and-custom-properties.md), [estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md) (points 4, 6 and 7)
 
 ## Context
 
-Estate ADR-018 replaces the header's kicker with a rooms menu: a button
+Estate ADR-035 point 6 replaces the header's kicker with a rooms menu: a button
 with the current room's name opens a list of every room, each with its
 accent as a dot, and the room data and the five accents in both themes
 live in this package. The menu is the first header part that opens and
@@ -85,7 +85,7 @@ the points that stand.
 - **The room data in `core.ts`:** khe-sites could not serve it without a
   bundler, and `site-locale.js` would copy the names.
 - **Dark dots set by each app:** every app would carry all five accents in
-  both themes only for the dots (estate ADR-018 point 4).
+  both themes only for the dots (estate ADR-035 point 4).
 - **A theme custom element:** rejected for the header in ADR-001, and it
   would still need the inline script for first paint.
 - **A blocking external init file in `<head>`:** one more request before

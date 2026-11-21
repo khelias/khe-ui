@@ -2,9 +2,9 @@
    font family, width and weight is a --khe-header-* custom property; an app sets
    its palette on .site-header (and on a standalone .language-switcher, if it has
    one). The defaults are khe.ee's dark teal, except the room dots, which are
-   the family's room accents (estate ADR-018). Loads no fonts. The :root selectors
+   the family's room accents (estate ADR-035 point 4). Loads no fonts. The :root selectors
    pick the theme toggle's icon and the dark dot values, and show the product view
-   (estate ADR-030). */
+   (estate ADR-035 point 11). */
 
 /* The defaults sit on the header and on a switcher outside one, not on the switcher
    inside, so values an app sets on .site-header reach it. */
@@ -224,7 +224,7 @@ html:has(.site-header--fixed) {
   text-decoration: none;
 }
 
-/* A demo's line under the row (estate ADR-030): part of the header, so a sticky or fixed
+/* A demo's line under the row (estate ADR-035 point 11): part of the header, so a sticky or fixed
    header keeps it and a measured --host-h includes it; neutral, on a ground of its own.
    The label stays whole and the sentence wraps beside it. */
 .site-header__demo {
@@ -628,7 +628,7 @@ html:has(.site-header--fixed) {
   }
 }
 
-/* The product view (estate ADR-030): the script from @khelias/ui/view sets the attribute
+/* The product view (estate ADR-035 point 11): the script from @khelias/ui/view sets the attribute
    before first paint. The app's title leads the row, at the size of a page's context
    name; no mark, rooms or demo line. */
 :root[data-khe-view="product"] :is(.site-header__brand, .site-header__rooms, .site-header__rooms-menu, .site-header__slash, .site-header__demo) {

@@ -68,7 +68,7 @@ import { SiteHeader } from '@khelias/ui/react';
 `themeToggle` adds a sun/moon button in front of the language switcher.
 The visitor's choice overrides the system setting, is stored under a key
 the app names, and is cleared when it equals the system again
-([estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md)).
+([estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md) point 6).
 Put the pre-paint script in `<head>`, before the first stylesheet, so a
 stored choice shows on first paint:
 
@@ -104,12 +104,12 @@ Style the page from `<html data-theme="light|dark">`, falling back to
 `demo: { label: 'Demo', note: '…' }` adds a line under the header on a demo;
 `link: { href, label }` in it adds a link to the real site after the
 sentence
-([estate ADR-034](https://github.com/khelias/khe-architecture/blob/main/decisions/034-the-demo-line-links-the-real-site.md)).
+([ADR-006](docs/adr/006-the-demo-line-links-the-real-site.md)).
 A product page shows the KHE frame when the tab came from khe.ee, the games
 hub or another page of its own origin outside the product, and keeps it in
 that tab for 30 minutes; otherwise, and always as an installed app, it shows
 its own header: the title, the toggle and the switcher
-([estate ADR-030](https://github.com/khelias/khe-architecture/blob/main/decisions/030-the-portfolio-frame-and-the-product-view.md)).
+([estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md) point 11).
 It passes `product: { root: '/my-app/' }` beside its `context` title, gives the footer a
 `home: { label: 'KHE.ee', href: 'https://khe.ee/' }` link, and puts the
 view script into `<head>` before the first stylesheet:

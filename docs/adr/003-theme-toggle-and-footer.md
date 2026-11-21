@@ -2,11 +2,11 @@
 
 - **Status:** Superseded (2026-10-20)
 - **Superseded by:** [ADR-004](004-rooms-menu-as-a-native-popover.md)
-- **Related:** [estate ADR-017](https://github.com/khelias/khe-architecture/blob/main/decisions/017-shared-theme-toggle-and-footer.md), [ADR-001](001-light-dom-markup-and-custom-properties.md)
+- **Related:** [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md) (points 6 and 7), [ADR-001](001-light-dom-markup-and-custom-properties.md)
 
 ## Context
 
-Estate ADR-017 moves the light/dark override and the site footer into this
+Estate ADR-014 points 6 and 7 move the light/dark override and the site footer into this
 package. The override is the first behaviour the package carries: it reads
 and writes storage, sets `data-theme` on `<html>` and must take effect
 before first paint. Its consumers differ as the header's do: khe-sites

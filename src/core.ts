@@ -89,7 +89,7 @@ export interface SiteHeaderContext<Node> {
   readonly href?: string;
 }
 
-/** The rooms menu (estate ADR-018): the current room's button and the list of every room. */
+/** The rooms menu (estate ADR-035 point 6): the current room's button and the list of every room. */
 export interface SiteHeaderRooms {
   readonly current: RoomId;
   /** The language of the room names and notes, and the `lang` of their hrefs. */
@@ -98,18 +98,18 @@ export interface SiteHeaderRooms {
   readonly currentHref?: string;
 }
 
-/** The demo line under the header (estate ADR-030): what the demo shows and what stays private. */
+/** The demo line under the header (estate ADR-035 point 11): what the demo shows and what stays private. */
 export interface SiteHeaderDemo {
   /** e.g. `Demo`. */
   readonly label: string;
   /** One sentence. */
   readonly note: string;
-  /** A link to the real site after the sentence, labelled for the family (estate ADR-034). */
+  /** A link to the real site after the sentence, labelled for the family (docs/adr/006). */
   readonly link?: { readonly href: string; readonly label: string };
 }
 
 /**
- * Marks a product page, one with the frame and the product view (estate ADR-030). The
+ * Marks a product page, one with the frame and the product view (estate ADR-035 point 11). The
  * page embeds `viewInitScript(root)` from `@khelias/ui/view` itself.
  */
 export interface SiteHeaderProduct {
@@ -347,7 +347,7 @@ export interface SiteFooterPartAttrs {
 export interface SiteFooterBaseOptions<Node> {
   /** The link list's accessible name, e.g. `Page links`. */
   readonly label: string;
-  /** The KHE.ee link in front of the links, shown in the product view only (estate ADR-030). */
+  /** The KHE.ee link in front of the links, shown in the product view only (estate ADR-035 point 11). */
   readonly home?: SiteFooterHome<Node>;
   /** In order; at least one. */
   readonly links: readonly SiteFooterLink<Node>[];

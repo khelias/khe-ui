@@ -1,4 +1,4 @@
-// The portfolio frame and the product view (estate ADR-030): a product page shows the
+// The portfolio frame and the product view (estate ADR-035 point 11): a product page shows the
 // KHE frame while this tab came from a frame page in the last 30 minutes, else its own
 // header. Imports nothing and touches no DOM at load, like theme.ts: a build imports it
 // in Node, and the decision runs as an inline script before first paint.

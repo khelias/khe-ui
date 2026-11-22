@@ -257,7 +257,9 @@ Automated writers
 ([estate ADR-007](https://github.com/khelias/khe-architecture/blob/main/decisions/007-automated-writers.md)):
 Renovate automerges this repo's own npm patch and minor updates of stable
 packages, 0.x patches of devDependencies, GitHub Actions minor and patch
-updates, digests, pins and lock file maintenance (`renovate.json`); the way
+updates, digests and pins (`renovate.json`); an npm or Actions update waits
+until its release is three days old, and lock file maintenance waits for a
+merge by hand. The way
 back is to revert its commit on `main`. `release.yml` publishes the tagged
 version of `@khelias/ui`; the way back from a bad release is `npm deprecate`
 on that version and a fixed release, and nothing reaches an app before that

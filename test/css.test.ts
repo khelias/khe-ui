@@ -71,8 +71,8 @@ const darkDotRules = rules(css).filter((rule) => DARK_DOT_SELECTORS.includes(rul
 // The family paper and surface of each theme, from khe-sites' DESIGN.md: the grounds
 // a consumer puts the menu on.
 const FAMILY_GROUNDS = {
-  light: { paper: '#fafafa', surface: '#ffffff' },
-  dark: { paper: '#0b0d0d', surface: '#121615' },
+  light: { paper: '#f6f6f2', surface: '#ffffff' },
+  dark: { paper: '#0c0e0f', surface: '#15181a' },
 };
 
 // Specificity as one number (ids, then classes, attributes and pseudo-classes, then

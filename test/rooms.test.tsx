@@ -19,7 +19,7 @@ const header = (currentHref?: string) =>
 
 describe('ROOMS', () => {
   it('lists the seven rooms in order', () => {
-    expect(ROOM_IDS).toEqual(['home', 'games', 'house', 'trips', 'stories', 'workshop', 'server']);
+    expect(ROOM_IDS).toEqual(['home', 'house', 'workshop', 'stories', 'trips', 'server', 'games']);
     expect(ROOMS.map((room) => room.id)).toEqual([...ROOM_IDS]);
   });
 

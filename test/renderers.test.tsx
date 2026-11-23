@@ -246,27 +246,27 @@ describe('renderSiteHeader', () => {
   it('lists every room in order, with the current one marked and checked', () => {
     const doc = parse(renderSiteHeader(fixtures['rooms and a title']!));
     const items = [...doc.querySelectorAll('a.site-header__room')];
-    expect(items.map((item) => item.getAttribute('data-khe-room'))).toEqual(['home', 'games', 'house', 'trips', 'stories', 'workshop', 'server']);
+    expect(items.map((item) => item.getAttribute('data-khe-room'))).toEqual(['home', 'house', 'workshop', 'stories', 'trips', 'server', 'games']);
     expect(items.map((item) => item.getAttribute('href'))).toEqual([
       'https://khe.ee/?lang=et',
-      'https://games.khe.ee/?lang=et',
       'https://khe.ee/ha/?lang=et',
-      'https://khe.ee/trips/?lang=et',
-      'https://khe.ee/stories/?lang=et',
       'https://khe.ee/workshop/?lang=et',
+      'https://khe.ee/stories/?lang=et',
+      'https://khe.ee/trips/?lang=et',
       'https://khe.ee/architecture/?lang=et',
+      'https://games.khe.ee/?lang=et',
     ]);
     expect(items.filter((item) => item.hasAttribute('aria-current')).map((item) => item.getAttribute('data-khe-room'))).toEqual(['games']);
     expect(items.filter((item) => item.querySelector('svg.site-header__room-check')).map((item) => item.getAttribute('data-khe-room'))).toEqual(['games']);
     expect(doc.querySelector('.site-header__rooms')!.getAttribute('aria-label')).toBe('Mängud, Toad');
     expect(items.map((item) => item.getAttribute('aria-label'))).toEqual([
       'Kodu, Avaleht',
-      'Mängud, Õppemängud ja AI Seiklus',
       'Koduautomaatika, Maja juhtimine, demo',
-      'Reisipäevik, Reisid kaardil, demo',
-      'Jutud, Unejutud, ette loetud',
       'Töökoda, Detailid, mida ise prindime',
+      'Jutud, Unejutud, ette loetud',
+      'Reisipäevik, Reisid kaardil, demo',
       'Koduserver, Kuidas see kõik töötab',
+      'Mängud, Õppemängud ja AI Seiklus',
     ]);
     // The labels carry the commas; the text holds the visible words only.
     expect(doc.querySelector('.site-header__rooms')!.textContent).toBe('Mängud');

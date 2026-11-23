@@ -36,13 +36,13 @@
   --khe-header-menu-current-bg: rgba(94, 234, 212, 0.07);
   --khe-header-demo-bg: #0b0e0e;
   /* The room accents of khe-sites' DESIGN.md, light here, dark below. */
-  --khe-header-room-home: #d7263d;
-  --khe-header-room-games: #8a5a12;
-  --khe-header-room-house: #1f5fa8;
-  --khe-header-room-trips: #b75a3a;
-  --khe-header-room-stories: #a3336f;
-  --khe-header-room-workshop: #5d6b16;
-  --khe-header-room-server: #246b5f;
+  --khe-header-room-home: #d12839;
+  --khe-header-room-games: #8a5b12;
+  --khe-header-room-house: #1d5ca3;
+  --khe-header-room-trips: #b55231;
+  --khe-header-room-stories: #9e2f69;
+  --khe-header-room-workshop: #586914;
+  --khe-header-room-server: #1f685c;
 
   --khe-header-switcher-radius: 8px;
   --khe-header-switcher-border: rgba(255, 255, 255, 0.045);
@@ -58,24 +58,24 @@
 /* The dark room dots follow <html data-theme>, else the system setting, like the
    toggle's icon. Wrapped whole in :where(), so a value an app sets on .site-header wins. */
 :where(:root[data-theme="dark"] .site-header) {
-  --khe-header-room-home: #fb4b57;
-  --khe-header-room-games: #d9a441;
-  --khe-header-room-house: #6fe3ff;
-  --khe-header-room-trips: #d9764f;
-  --khe-header-room-stories: #f08cc0;
-  --khe-header-room-workshop: #b8c75a;
-  --khe-header-room-server: #7fc8b8;
+  --khe-header-room-home: #f65d65;
+  --khe-header-room-games: #e2b253;
+  --khe-header-room-house: #70c3ff;
+  --khe-header-room-trips: #ea946d;
+  --khe-header-room-stories: #f292c3;
+  --khe-header-room-workshop: #bdd05e;
+  --khe-header-room-server: #7ccbb9;
 }
 
 @media (prefers-color-scheme: dark) {
   :where(:root:not([data-theme="light"]) .site-header) {
-    --khe-header-room-home: #fb4b57;
-    --khe-header-room-games: #d9a441;
-    --khe-header-room-house: #6fe3ff;
-    --khe-header-room-trips: #d9764f;
-    --khe-header-room-stories: #f08cc0;
-    --khe-header-room-workshop: #b8c75a;
-    --khe-header-room-server: #7fc8b8;
+    --khe-header-room-home: #f65d65;
+    --khe-header-room-games: #e2b253;
+    --khe-header-room-house: #70c3ff;
+    --khe-header-room-trips: #ea946d;
+    --khe-header-room-stories: #f292c3;
+    --khe-header-room-workshop: #bdd05e;
+    --khe-header-room-server: #7ccbb9;
   }
 }
 

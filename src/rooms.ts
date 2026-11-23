@@ -3,7 +3,7 @@
 
 export type RoomLocale = 'et' | 'en';
 
-export const ROOM_IDS = ['home', 'games', 'house', 'trips', 'stories', 'workshop', 'server'] as const;
+export const ROOM_IDS = ['home', 'house', 'workshop', 'stories', 'trips', 'server', 'games'] as const;
 
 export type RoomId = (typeof ROOM_IDS)[number];
 
@@ -19,28 +19,10 @@ export interface Room {
 export const ROOMS: readonly Room[] = [
   { id: 'home', name: { et: 'Kodu', en: 'Home' }, note: { et: 'Avaleht', en: 'The front page' }, href: 'https://khe.ee/' },
   {
-    id: 'games',
-    name: { et: 'Mängud', en: 'Games' },
-    note: { et: 'Õppemängud ja AI Seiklus', en: 'Learning games and AI Adventure' },
-    href: 'https://games.khe.ee/',
-  },
-  {
     id: 'house',
     name: { et: 'Koduautomaatika', en: 'Home automation' },
     note: { et: 'Maja juhtimine, demo', en: 'Running the house, a demo' },
     href: 'https://khe.ee/ha/',
-  },
-  {
-    id: 'trips',
-    name: { et: 'Reisipäevik', en: 'Travel journal' },
-    note: { et: 'Reisid kaardil, demo', en: 'Trips on a map, a demo' },
-    href: 'https://khe.ee/trips/',
-  },
-  {
-    id: 'stories',
-    name: { et: 'Jutud', en: 'Stories' },
-    note: { et: 'Unejutud, ette loetud', en: 'Bedtime stories, read aloud' },
-    href: 'https://khe.ee/stories/',
   },
   {
     id: 'workshop',
@@ -49,10 +31,28 @@ export const ROOMS: readonly Room[] = [
     href: 'https://khe.ee/workshop/',
   },
   {
+    id: 'stories',
+    name: { et: 'Jutud', en: 'Stories' },
+    note: { et: 'Unejutud, ette loetud', en: 'Bedtime stories, read aloud' },
+    href: 'https://khe.ee/stories/',
+  },
+  {
+    id: 'trips',
+    name: { et: 'Reisipäevik', en: 'Travel journal' },
+    note: { et: 'Reisid kaardil, demo', en: 'Trips on a map, a demo' },
+    href: 'https://khe.ee/trips/',
+  },
+  {
     id: 'server',
     name: { et: 'Koduserver', en: 'The home server' },
     note: { et: 'Kuidas see kõik töötab', en: 'How all of this runs' },
     href: 'https://khe.ee/architecture/',
+  },
+  {
+    id: 'games',
+    name: { et: 'Mängud', en: 'Games' },
+    note: { et: 'Õppemängud ja AI Seiklus', en: 'Learning games and AI Adventure' },
+    href: 'https://games.khe.ee/',
   },
 ];
 

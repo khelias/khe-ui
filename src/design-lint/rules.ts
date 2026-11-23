@@ -6,13 +6,20 @@ export type Rule = (typeof RULES)[number];
 /** The rules a `content` glob lifts: a room's own words and pictures, not its chrome. */
 const CONTENT_RULES: ReadonlySet<Rule> = new Set<Rule>(['palette', 'emoji', 'dash']);
 
-/** Every value of the family Colors table in khe-sites' DESIGN.md, both themes. */
+/** Every value of the family Colors table in khe-sites' DESIGN.md, both themes: the values
+    before the Nordic contrast palette stay until every app has moved off them. */
 const FAMILY_HEX: ReadonlySet<string> = new Set([
   '#fafafa', '#0b0d0d', '#ffffff', '#121615', '#eff1f1', '#0f1211', '#121415', '#eef1f0',
   '#363b3d', '#c4cac7', '#5f6567', '#8a928f', '#e3e5e5', '#232827', '#c3c7c7', '#3a413f',
   '#d7263d', '#fb4b57', '#246b5f', '#7fc8b8', '#b75a3a', '#d9764f', '#93411f', '#e8926a',
   '#1f5fa8', '#6fe3ff', '#e8eef6', '#060c1b', '#8a5a12', '#d9a441', '#6a3d8f', '#b59ad6',
   '#2f6b3a', '#7cc28a', '#a3336f', '#f08cc0', '#5d6b16', '#b8c75a',
+  '#070d1d', '#0c0e0f', '#111315', '#121416', '#14171a', '#15181a', '#1c1f23', '#1d2124',
+  '#1d2226', '#202528', '#252a2d', '#2a3036', '#2c3136', '#3b3f42', '#3d4448', '#666b6e',
+  '#8b928f', '#9da3a8', '#c5c9c6', '#c6c6bd', '#e2e2db', '#e4eaee', '#e9e9e1', '#eaeae4',
+  '#f1f2ee', '#f3f3ee', '#f6f6f2', '#d12839', '#f65d65', '#1d5ca3', '#70c3ff', '#586914',
+  '#bdd05e', '#9e2f69', '#f292c3', '#b55231', '#ea946d', '#1f685c', '#7ccbb9', '#8a5b12',
+  '#e2b253', '#9a6420', '#e5ad5e',
 ]);
 
 // A `prose` matcher reads the line without its comments.

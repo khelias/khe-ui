@@ -19,7 +19,13 @@ export function renderSiteFooter(options: SiteFooterOptions): string {
       `    ${tag('a', link.attrs)}${link.icon ? iconHtml(link.icon) : ''}${escapeHtml(link.label)}</a>`,
     ]),
     '  </nav>',
-    ...lines.map((line) => `  ${tag('span', line.attrs)}${escapeHtml(line.text)}</span>`),
+    ...(lines.length
+      ? [
+          '  <div class="site-footer__lines">',
+          ...lines.map((line) => `    ${tag('span', line.attrs)}${escapeHtml(line.text)}</span>`),
+          '  </div>',
+        ]
+      : []),
     '</footer>',
   ];
   return indented('site-footer', html, options.indent);

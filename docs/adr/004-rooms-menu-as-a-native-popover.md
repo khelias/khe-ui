@@ -1,6 +1,6 @@
 # ADR-004: The rooms menu is a native popover with its room data in a standalone module; the package sets the dark dot values
 
-- **Status:** Accepted (2026-10-20)
+- **Status:** Accepted (2026-11-23; originally 2026-10-20)
 - **Supersedes:** [ADR-003](003-theme-toggle-and-footer.md)
 - **Related:** [ADR-001](001-light-dom-markup-and-custom-properties.md), [estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md) (points 4, 6 and 7)
 
@@ -25,9 +25,10 @@ the points that stand.
 1. **The toggle is a header part.** `themeToggle: { label }` adds
    `button.site-header__theme` after the React `actions` and before the
    language switcher, with its own `attrs` part. It is named for a state,
-   "Dark theme", and `aria-pressed` is true while dark shows. Its icon
-   shows the theme a press leads to: a sun while dark shows, a moon while
-   light does.
+   "Dark theme", and `aria-pressed` is true while dark shows. Its icon is
+   one geometric half-filled contrast disc (`svg.site-header__theme-icon`)
+   that CSS rotates 180deg while dark shows (amended 2026-11-23 from
+   separate sun and moon icons).
 2. **The renderers stay as ADR-001 has them.** The string renderer writes
    the button with `aria-pressed="false"` and no behaviour. The React
    component is controlled: `themeToggle` takes `dark` and `onToggle`, and
@@ -56,7 +57,9 @@ the points that stand.
    `renderSiteFooter` and `<SiteFooter>` with a parity test, its own
    stylesheet `@khelias/ui/site-footer.css` and `--khe-footer-*`
    properties. The app passes the links, the lines and the nav's name; the
-   package draws the GitHub and LinkedIn marks and places nothing. An
+   package draws the GitHub and LinkedIn marks, lays out the split row with
+   a top border (`--khe-footer-border`) and grouped `.site-footer__lines`
+   (amended 2026-11-23), and places nothing (no outer margin or padding). An
    internal link such as Privacy stays text: the marks name outside brands,
    and a generic icon on it would read as a security claim.
 8. **The rooms list is native Popover API markup:** a `button` with

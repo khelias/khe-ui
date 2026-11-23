@@ -21,15 +21,12 @@
   --khe-header-focus: rgba(94, 234, 212, 0.3);
 
   --khe-header-brand-weight: 600;
-  --khe-header-brand-radius: 8px;
-  --khe-header-brand-border: rgba(94, 234, 212, 0.3);
-  --khe-header-brand-border-hover: rgba(94, 234, 212, 0.48);
-  --khe-header-brand-bg: rgba(255, 255, 255, 0.025);
-  --khe-header-brand-shadow: 0 16px 38px rgba(0, 0, 0, 0.24);
+  --khe-header-brand-radius: 6px;
   --khe-header-suffix: #fb4b57;
 
   --khe-header-title-weight: 600;
 
+  --khe-header-menu-radius: 10px;
   --khe-header-menu-bg: #0b0e0e;
   --khe-header-menu-border: rgba(255, 255, 255, 0.1);
   --khe-header-menu-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
@@ -90,6 +87,7 @@
   position: sticky;
   top: 0;
   z-index: var(--khe-header-z);
+  padding-top: env(safe-area-inset-top);
   border-bottom: 1px solid var(--khe-header-border);
   background: var(--khe-header-bg);
   -webkit-backdrop-filter: blur(var(--khe-header-blur));
@@ -108,7 +106,7 @@
 }
 
 html:has(.site-header--fixed) {
-  --host-h: calc(3.65rem + 1px);
+  --host-h: calc(3.65rem + 1px + env(safe-area-inset-top));
 }
 
 .site-header__inner {
@@ -123,26 +121,22 @@ html:has(.site-header--fixed) {
 
 .site-header__brand {
   flex-shrink: 0;
-  min-width: 3.35rem;
+  min-width: 0;
   height: 2.75rem;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.025em;
-  padding: 0 0.55rem;
-  border: 1px solid var(--khe-header-brand-border);
+  padding: 0 0.2rem 0 0;
   border-radius: var(--khe-header-brand-radius);
-  background: var(--khe-header-brand-bg);
-  box-shadow: var(--khe-header-brand-shadow);
   color: var(--khe-header-text);
-  font-size: 0.85rem;
+  font-size: 1.0625rem;
   font-weight: var(--khe-header-brand-weight);
-  letter-spacing: 0;
+  letter-spacing: -0.025em;
+  line-height: 1;
   text-decoration: none;
   white-space: nowrap;
   user-select: none;
   -webkit-user-select: none;
-  transition: border-color 0.16s, transform 0.16s, color 0.16s;
+  transition: opacity 0.16s, transform 0.16s, color 0.16s;
 }
 
 .site-header__brand:active {
@@ -153,10 +147,9 @@ html:has(.site-header--fixed) {
 .brand-mark__suffix {
   display: inline-block;
   color: var(--khe-header-suffix);
-  font-size: 0.7em;
+  font-size: 1em;
   font-weight: var(--khe-header-brand-weight);
   line-height: 1;
-  transform: translateY(0.22em);
 }
 
 /* The room's name and the app's title share a type. On a phone the app's name leads:
@@ -275,16 +268,16 @@ html:has(.site-header--fixed) {
 .site-header__rooms-menu {
   position: fixed;
   inset: auto;
-  top: calc(3.65rem + 1px);
+  top: calc(3.65rem + 1px + env(safe-area-inset-top));
   left: calc(max(0px, (100% - var(--khe-header-max-width)) / 2) + max(1rem, env(safe-area-inset-left)));
   width: min(18rem, 100% - 2rem);
   height: auto;
-  max-height: calc(100dvh - 3.65rem - 1px - 0.75rem);
+  max-height: calc(100dvh - 3.65rem - 1px - env(safe-area-inset-top) - 0.75rem);
   margin: 0;
   padding: 0.35rem;
   overflow: auto;
   border: 1px solid var(--khe-header-menu-border);
-  border-radius: var(--khe-header-brand-radius);
+  border-radius: var(--khe-header-menu-radius);
   background: var(--khe-header-menu-bg);
   box-shadow: var(--khe-header-menu-shadow);
   color: var(--khe-header-text);
@@ -415,11 +408,11 @@ html:has(.site-header--fixed) {
   border: 1px solid var(--khe-header-switcher-border);
   border-radius: var(--khe-header-switcher-radius);
   background: var(--khe-header-switcher-bg);
-  color: var(--khe-header-text-muted);
+  color: var(--khe-header-text);
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  transition: color 0.15s, transform 0.1s ease-out;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s ease-out;
 }
 
 /* A 44px hit area that grows up, down and left only: the switcher's first button
@@ -437,12 +430,20 @@ html:has(.site-header--fixed) {
   transform: scale(0.94);
 }
 
-.site-header__theme svg {
+.site-header__theme-icon {
   width: 1.05rem;
   height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transition: transform 0.25s ease;
 }
 
-.site-header__theme svg,
+.site-header__theme-icon path:last-child {
+  fill: currentColor;
+  stroke: none;
+}
+
 .site-header__rooms-chevron,
 .site-header__room-check {
   fill: none;
@@ -452,27 +453,21 @@ html:has(.site-header--fixed) {
   stroke-linejoin: round;
 }
 
-/* The icon shows the theme a press leads to. It follows <html data-theme>, else the
-   system setting, so it is right before any script runs. */
-.site-header__theme-sun {
-  display: none;
-}
-
-:root[data-theme="dark"] .site-header__theme-sun {
-  display: block;
-}
-
-:root[data-theme="dark"] .site-header__theme-moon {
-  display: none;
+/* The contrast disc turns 180deg while dark shows. It follows <html data-theme>,
+   else the system setting, so it is right before any script runs. */
+:root[data-theme="dark"] .site-header__theme-icon {
+  transform: rotate(180deg);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .site-header__theme-sun {
-    display: block;
+  :root:not([data-theme="light"]) .site-header__theme-icon {
+    transform: rotate(180deg);
   }
+}
 
-  :root:not([data-theme="light"]) .site-header__theme-moon {
-    display: none;
+@media (prefers-reduced-motion: reduce) {
+  .site-header__theme-icon {
+    transition: none;
   }
 }
 
@@ -495,7 +490,7 @@ html:has(.site-header--fixed) {
   background: transparent;
   color: var(--khe-header-text-muted);
   cursor: pointer;
-  font: var(--khe-header-button-weight) 0.66rem/1 var(--khe-header-font);
+  font: var(--khe-header-button-weight) 0.75rem/1 var(--khe-header-font);
   letter-spacing: var(--khe-header-button-tracking);
   text-transform: uppercase;
   user-select: none;
@@ -526,15 +521,19 @@ html:has(.site-header--fixed) {
 
 @media (hover: hover) and (pointer: fine) {
   .site-header__brand:hover {
-    transform: translateY(-1px);
-    border-color: var(--khe-header-brand-border-hover);
+    opacity: 0.78;
   }
 
   .language-switcher button:hover {
     color: var(--khe-header-text);
   }
 
-  .site-header__theme:hover,
+  .site-header__theme:hover {
+    border-color: var(--khe-header-menu-border);
+    background: var(--khe-header-menu-current-bg);
+    color: var(--khe-header-text);
+  }
+
   .language-switcher button[aria-pressed="true"]:hover {
     color: var(--khe-header-button-pressed-text);
   }
@@ -577,8 +576,7 @@ html:has(.site-header--fixed) {
 
   /* Narrower, not lower: the mark stays a 44px target. */
   .site-header__brand {
-    min-width: 3.05rem;
-    font-size: 0.8rem;
+    font-size: 0.95rem;
   }
 
   .site-header__rooms,
@@ -592,13 +590,13 @@ html:has(.site-header--fixed) {
   }
 
   .site-header__rooms-menu {
-    top: calc(3.35rem + 1px);
+    top: calc(3.35rem + 1px + env(safe-area-inset-top));
     left: max(0.75rem, env(safe-area-inset-left));
-    max-height: calc(100dvh - 3.35rem - 1px - 0.75rem);
+    max-height: calc(100dvh - 3.35rem - 1px - env(safe-area-inset-top) - 0.75rem);
   }
 
   html:has(.site-header--fixed) {
-    --host-h: calc(3.35rem + 1px);
+    --host-h: calc(3.35rem + 1px + env(safe-area-inset-top));
   }
 
   /* An app's own action takes the title's room first, in the frame, where the mark and

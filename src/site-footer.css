@@ -8,6 +8,7 @@
   --khe-footer-font: 'Familjen Grotesk', system-ui, sans-serif;
   --khe-footer-size: 0.75rem;
   --khe-footer-weight: 400;
+  --khe-footer-border: rgba(255, 255, 255, 0.07);
   --khe-footer-text: #7f8a86;
   --khe-footer-text-hover: #f5f7f6;
   --khe-footer-focus: rgba(94, 234, 212, 0.3);
@@ -22,21 +23,32 @@
 }
 
 .site-footer {
-  display: grid;
-  justify-items: center;
-  gap: 0.45rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 1.5rem;
+  border-top: 1px solid var(--khe-footer-border);
   color: var(--khe-footer-text);
   font-family: var(--khe-footer-font);
   font-size: var(--khe-footer-size);
   font-weight: var(--khe-footer-weight);
-  text-align: center;
+  text-align: start;
 }
 
 .site-footer nav {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-inline-end: auto;
+}
+
+.site-footer__lines {
+  flex: 1 1 10rem;
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+  text-align: end;
 }
 
 .site-footer nav a {
@@ -78,4 +90,14 @@
 .site-footer nav a:focus-visible {
   outline: 2px solid var(--khe-footer-focus);
   outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .site-footer nav {
+    width: 100%;
+  }
+
+  .site-footer__lines {
+    text-align: start;
+  }
 }

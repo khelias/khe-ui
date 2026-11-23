@@ -113,8 +113,9 @@ describe('renderSiteHeader', () => {
     expect(html).toContain(
       '<button class="site-header__theme" type="button" aria-label="Dark &quot;theme&quot; &amp; &lt;more&gt;" aria-pressed="false" data-i18n-aria="headerTheme">',
     );
-    expect(html).toContain('<svg class="site-header__theme-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0"></path><path d="');
-    expect(html).toContain('<svg class="site-header__theme-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="');
+    expect(html).toContain(
+      '<svg class="site-header__theme-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M10 2.75a7.25 7.25 0 1 0 0 14.5a7.25 7.25 0 1 0 0-14.5"></path><path d="M10 2.75A7.25 7.25 0 0 0 10 17.25Z"></path></svg>',
+    );
     expect(html).toContain('<div class="language-switcher" role="group" aria-label="Keel" data-i18n-aria="headerLanguage">');
     expect(html).toContain('<button type="button" data-lang-option="et" aria-pressed="true" title="Eesti">ET</button>');
     expect(html).toContain('<button type="button" data-lang-option="en" aria-pressed="false" data-x="&quot;q&quot;">EN</button>');
@@ -191,13 +192,15 @@ describe('renderSiteHeader', () => {
     expect(doc.querySelector('.site-header__theme')).toBeNull();
   });
 
-  it('puts the theme toggle after the actions and before the switcher, holding sun then moon', () => {
+  it('puts the theme toggle after the actions and before the switcher, holding the contrast disc icon', () => {
     const doc = parse(renderSiteHeader(fixtures['theme toggle']!));
     const actions = [...doc.querySelector('.site-header__actions')!.children];
     expect(actions.map((child) => child.className)).toEqual(['site-header__theme', 'language-switcher']);
     const icons = [...doc.querySelectorAll('button.site-header__theme > svg')];
-    expect(icons.map((svg) => svg.getAttribute('class'))).toEqual(['site-header__theme-sun', 'site-header__theme-moon']);
-    expect(icons.every((svg) => svg.getAttribute('aria-hidden') === 'true' && svg.getAttribute('focusable') === 'false')).toBe(true);
+    expect(icons.map((svg) => svg.getAttribute('class'))).toEqual(['site-header__theme-icon']);
+    expect(icons[0]!.getAttribute('aria-hidden')).toBe('true');
+    expect(icons[0]!.getAttribute('focusable')).toBe('false');
+    expect(icons[0]!.querySelectorAll('path')).toHaveLength(2);
   });
 
   it('escapes & < > " in text and attributes', () => {

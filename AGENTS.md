@@ -117,11 +117,12 @@ the tests and the consumers' checks:
 - `div.site-header__actions`: the React `actions`, then with
   `themeToggle` the `button.site-header__theme` with `type="button"`,
   `aria-label` and `aria-pressed` (`"false"` from the string renderer, the
-  `dark` prop from React), holding `svg.site-header__theme-sun` then
-  `svg.site-header__theme-moon` (each `viewBox`, `aria-hidden="true"`,
-  `focusable="false"`), then `div.language-switcher` with `role="group"`
-  and `aria-label`, holding one `button` per locale with `type="button"`,
-  `data-lang-option` and `aria-pressed`
+  `dark` prop from React), holding one `svg.site-header__theme-icon`
+  (`viewBox="0 0 20 20"`, `aria-hidden="true"`, `focusable="false"`, a
+  circle outline and filled half that rotates 180deg while dark shows), then
+  `div.language-switcher` with `role="group"` and `aria-label`, holding one
+  `button` per locale with `type="button"`, `data-lang-option` and
+  `aria-pressed`
 - with `demo` (which needs `rooms`), after `div.site-header__inner` and
   inside the `header`: `p.site-header__demo` with `role="note"`, holding
   `span.site-header__demo-inner`, which holds
@@ -146,7 +147,8 @@ The footer, `footer.site-footer`:
   `svg.site-footer__icon` (`viewBox`, `aria-hidden="true"`,
   `focusable="false"`) before its label; between links a
   `span.site-footer__divider` with `aria-hidden="true"` holding `·`
-- then each line as `span.site-footer__line`
+- then, when `lines` is non-empty, `div.site-footer__lines` holding each
+  line as `span.site-footer__line`
 - `attrs` on `footer` and `nav`, and `attrs` on the home link, each link
   and line, under the same rules as the header's
 
@@ -177,14 +179,19 @@ home link and the divider after it outside that view. The demo line sits
 on `--khe-header-demo-bg`, under the header's border, its label in
 `--khe-header-text`, its sentence in `--khe-header-text-muted`, its link in
 `--khe-header-text`, underlined and `nowrap` so it wraps whole after the
-sentence, all 4.5:1 or more on the default. The menu has `--khe-header-menu-bg`, `-border`, `-shadow` and
-`-current-bg`; its names use `--khe-header-text`, its notes
-`--khe-header-text-muted`. The header fills its container; a page that
-puts it inside a padded container makes it full-bleed itself. Muted text,
-inactive-button and menu text contrast stay at 4.5:1 or more against the
-defaults, and every dot at 3:1 on the family paper and surface of its theme
-(tests read them from the CSS); a new property needs a default and is used
-through `var()` only. The toggle uses the switcher's tokens.
+sentence, all 4.5:1 or more on the default. The header adds `padding-top: env(safe-area-inset-top)` so installed apps
+clear the status bar without per-app overrides; `--host-h` and the rooms
+menu's `top` and `max-height` include it too. The menu has
+`--khe-header-menu-radius`, `-bg`, `-border`, `-shadow` and `-current-bg`;
+its names use `--khe-header-text`, its notes `--khe-header-text-muted`. The
+header fills its container; a page that puts it inside a padded container
+makes it full-bleed itself. Muted text, inactive-button and menu text
+contrast stay at 4.5:1 or more against the defaults, and every dot at 3:1
+on the family paper and surface of its theme (tests read them from the
+CSS); a new property needs a default and is used through `var()` only. The
+toggle uses the switcher's border, radius and background tokens and draws
+its contrast disc in `--khe-header-text` (never `--khe-header-button-pressed-text`,
+so inverted active pills keep toggle hover contrast).
 
 The menu opens in the top layer at `position: fixed`, just below the inner
 row (the heights `--host-h` defaults to), so over a demo line; with `fixed`
@@ -201,11 +208,13 @@ switcher never shrink. The list's
 none, do not reach them; its `ul` rule has one class and wins over a page's
 element rules.
 
-The footer's colours, font, sizes and weight are `--khe-footer-*`
+The footer's colours, border, font, sizes and weight are `--khe-footer-*`
 properties with defaults on `:where(.site-footer)` matching the header's
-(text 4.5:1 or more on the header's default ground, a test checks). Apps
-set them on `.site-footer` and place the footer themselves: the package
-sets no margin or padding on it.
+(text 4.5:1 or more on the header's default ground, a test checks). Its
+layout is a split row (links start-aligned, lines end-aligned; stacked
+start-aligned at 520px and below) under a 1px `--khe-footer-border`. Apps
+set its tokens on `.site-footer` and place the footer themselves: the
+package sets no margin or padding on it.
 
 The package carries the anatomy; apart from the room dots its defaults are
 not the KHE family's values. The dots are the room accents of khe-sites'

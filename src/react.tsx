@@ -93,9 +93,7 @@ export function SiteHeader<Code extends string = string>(options: SiteHeaderProp
           {actions}
           {theme ? (
             <button {...props(theme.attrs)} onClick={() => themeToggle?.onToggle()}>
-              {theme.icons.map((icon, index) => (
-                <IconSvg key={index} icon={icon} />
-              ))}
+              <IconSvg icon={theme.icon} />
             </button>
           ) : null}
           <div {...props(switcher)}>
@@ -149,11 +147,15 @@ export function SiteFooter(options: SiteFooterProps) {
           </Fragment>
         ))}
       </nav>
-      {lines.map((line, index) => (
-        <span key={index} {...props(line.attrs)}>
-          {line.text}
-        </span>
-      ))}
+      {lines.length > 0 ? (
+        <div className="site-footer__lines">
+          {lines.map((line, index) => (
+            <span key={index} {...props(line.attrs)}>
+              {line.text}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </footer>
   );
 }

@@ -43,7 +43,7 @@ export function renderSiteHeader<Code extends string>(options: SiteHeaderOptions
     ...(slash ? [`    ${tag('span', slash)}/</span>`] : []),
     ...(title ? [`    ${tag(title.tag, title.attrs)}${escapeHtml(title.node)}</${title.tag}>`] : []),
     '    <div class="site-header__actions">',
-    ...(theme ? [`      ${tag('button', theme.attrs)}`, ...theme.icons.map((icon) => `        ${iconHtml(icon)}`), '      </button>'] : []),
+    ...(theme ? [`      ${tag('button', theme.attrs)}`, `        ${iconHtml(theme.icon)}`, '      </button>'] : []),
     `      ${tag('div', switcher)}`,
     ...buttons.map((button) => `        ${tag('button', button.attrs)}${escapeHtml(button.label)}</button>`),
     '      </div>',

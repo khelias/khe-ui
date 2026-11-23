@@ -68,7 +68,10 @@ describe('renderSiteFooter', () => {
     expect([...nav.children].map((child) => child.tagName.toLowerCase())).toEqual(['a', 'span', 'a', 'span', 'a']);
     expect(nav.querySelectorAll('a > svg.site-footer__icon:first-child')).toHaveLength(2);
     expect(nav.querySelector('a[href^="/privacy"] svg')).toBeNull();
-    expect(doc.querySelectorAll('footer > span.site-footer__line')).toHaveLength(1);
+    expect(doc.querySelectorAll('footer > .site-footer__lines > span.site-footer__line')).toHaveLength(1);
+    const two = parse(renderSiteFooter(fixtures['no icons, two lines']!));
+    expect(two.querySelectorAll('footer > .site-footer__lines')).toHaveLength(1);
+    expect(two.querySelectorAll('footer > .site-footer__lines > span.site-footer__line')).toHaveLength(2);
   });
 
   it('puts the home link first, with its class, and a divider after it', () => {
@@ -125,6 +128,7 @@ describe('renderSiteFooter', () => {
   it('puts no divider by a single link and no line without lines', () => {
     const doc = parse(renderSiteFooter(fixtures['one link, no lines']!));
     expect(doc.querySelector('.site-footer__divider')).toBeNull();
+    expect(doc.querySelector('.site-footer__lines')).toBeNull();
     expect(doc.querySelector('.site-footer__line')).toBeNull();
   });
 

@@ -134,7 +134,7 @@ describe('site-header.css', () => {
         expect(rule.body.replace(/--khe-header-room-[a-z]+:\s*#[0-9a-f]{6};/g, '').trim()).toBe('');
         continue;
       }
-      for (const selector of rule.selector.split(',')) expect(selector.trim()).toMatch(/\.site-header__theme-(?:sun|moon)$/);
+      for (const selector of rule.selector.split(',')) expect(selector.trim()).toMatch(/\.site-header__theme-icon$/);
       expect(rule.body).not.toContain('--');
     }
     expect(darkDotRules).toHaveLength(2);
@@ -151,7 +151,7 @@ describe('site-header.css', () => {
     expect(app).toBe(100);
     for (const selector of DARK_DOT_SELECTORS) expect(specificity(selector)).toBeLessThan(app);
     expect(specificity(':where(.site-header, .language-switcher:not(.site-header *))')).toBe(0);
-    expect(specificity(':root[data-theme="dark"] .site-header__theme-sun')).toBe(300);
+    expect(specificity(':root[data-theme="dark"] .site-header__theme-icon')).toBe(300);
   });
 
   it('colours the dot of every room', () => {
@@ -162,7 +162,7 @@ describe('site-header.css', () => {
   });
 
   it('has the menu tokens and the light dots in the defaults block', () => {
-    for (const name of ['--khe-header-menu-bg', '--khe-header-menu-border', '--khe-header-menu-shadow', '--khe-header-menu-current-bg', ...ROOM_DOTS]) {
+    for (const name of ['--khe-header-menu-radius', '--khe-header-menu-bg', '--khe-header-menu-border', '--khe-header-menu-shadow', '--khe-header-menu-current-bg', ...ROOM_DOTS]) {
       expect(defaults.has(name), name).toBe(true);
     }
   });
@@ -280,13 +280,27 @@ describe('site-header.css', () => {
     expect(css).not.toMatch(/kicker|site-header__context/);
   });
 
-  it('colours the theme toggle with header tokens only', () => {
+  it('colours the theme toggle with header tokens only and keeps hover readable', () => {
     const toggle = rules(css).filter((rule) => rule.selector.includes('site-header__theme'));
     expect(toggle.length).toBeGreaterThanOrEqual(6);
     for (const { body } of toggle) {
       expect(body).not.toMatch(LITERAL_COLOUR);
       for (const [, name] of body.matchAll(/var\((--[a-z-]+)/g)) expect(name).toMatch(/^--khe-header-/);
     }
+    const hover = toggle.find((rule) => rule.selector === '.site-header__theme:hover');
+    expect(hover?.body).toContain('var(--khe-header-text)');
+    expect(hover?.body).not.toContain('--khe-header-button-pressed-text');
+  });
+
+  it('includes env(safe-area-inset-top) on the header, fixed --host-h and rooms popover', () => {
+    const header = rules(css).find((rule) => rule.selector === '.site-header');
+    expect(header?.body).toContain('padding-top: env(safe-area-inset-top);');
+    const fixed = rules(css).filter((rule) => rule.selector === 'html:has(.site-header--fixed)');
+    expect(fixed.length).toBe(2);
+    for (const rule of fixed) expect(rule.body).toContain('env(safe-area-inset-top)');
+    const menus = rules(css).filter((rule) => rule.selector === '.site-header__rooms-menu' && rule.body.includes('top:'));
+    expect(menus.length).toBe(2);
+    for (const rule of menus) expect(rule.body).toContain('env(safe-area-inset-top)');
   });
 
 });
@@ -294,7 +308,7 @@ describe('site-header.css', () => {
 describe('site-footer.css', () => {
   it('uses its tokens through var() only, each with a default', () => {
     const used = new Set([...footerCss.matchAll(/var\((--[a-z-]+)/g)].map(([, name]) => name!));
-    expect(used.size).toBeGreaterThanOrEqual(6);
+    expect(used.size).toBeGreaterThanOrEqual(7);
     expect([...used].filter((name) => !footerDefaults.has(name))).toEqual([]);
     const outsideDefaults = rules(footerCss).filter((rule) => !rule.body.includes('--khe-footer-font:'));
     for (const { body } of outsideDefaults) {
@@ -304,6 +318,7 @@ describe('site-footer.css', () => {
   });
 
   it('matches the header defaults and gives the text at least 4.5:1 on the header ground', () => {
+    expect(footerDefaults.get('--khe-footer-border')).toBe(defaults.get('--khe-header-border'));
     expect(footerDefaults.get('--khe-footer-text')).toBe(defaults.get('--khe-header-text-muted'));
     expect(footerDefaults.get('--khe-footer-text-hover')).toBe(defaults.get('--khe-header-text'));
     expect(contrast(colour('--khe-footer-text', footerDefaults), headerBg)).toBeGreaterThanOrEqual(4.5);

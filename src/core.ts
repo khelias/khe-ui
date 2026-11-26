@@ -106,7 +106,7 @@ export interface SiteHeaderDemo {
   readonly label: string;
   /** One sentence. */
   readonly note: string;
-  /** A link to the real site after the sentence, labelled for the family (docs/adr/006). */
+  /** A link to the real site after the sentence, labelled for the family (docs/decisions/006). */
   readonly link?: { readonly href: string; readonly label: string };
 }
 

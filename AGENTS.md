@@ -17,13 +17,13 @@ the footer here, and
 [estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md)
 the rooms menu, the room list, the room accents and the design check, and
 (point 11) the demo line and the product view of a product page;
-[docs/adr/006](docs/adr/006-the-demo-line-links-the-real-site.md) adds the
+[docs/decisions/006](docs/decisions/006-the-demo-line-links-the-real-site.md) adds the
 demo line's link to the real site.
 
 npm, Node 26 (`.nvmrc`, `engine-strict`), TypeScript 7 compiled by plain
 `tsc`, Vitest with happy-dom for the tests that need a DOM. No runtime
 dependencies; `react` ^19 is an optional peer dependency. The bin runs on
-Node built-ins only ([docs/adr/005](docs/adr/005-design-check-as-a-node-bin.md)).
+Node built-ins only ([docs/decisions/005](docs/decisions/005-design-check-as-a-node-bin.md)).
 
 ## Commands
 
@@ -130,7 +130,7 @@ the tests and the consumers' checks:
   `span.site-header__demo-body`, holding `span.site-header__demo-text`
   (`note`) and, with `demo.link`, a space and `a.site-header__demo-link`
   with `href` (through the same `javascript:` check as the other hrefs;
-  [docs/adr/006](docs/adr/006-the-demo-line-links-the-real-site.md)). The space is real text, not indentation, so the parity
+  [docs/decisions/006](docs/decisions/006-the-demo-line-links-the-real-site.md)). The space is real text, not indentation, so the parity
   test's `normalise` strips only whitespace across a line break
 - `attrs` adds attributes after each part's own: `brand`, `rooms` (the
   button, only with `rooms`), `title`, `theme` (only with `themeToggle`),
@@ -171,7 +171,7 @@ script runs, and set the dark values of the room dots
 (`--khe-header-room-<id>`) under `:root[data-theme="dark"]` and the dark
 media query, wrapped whole in `:where()` so an app's value on
 `.site-header` still wins; no other custom property is set there
-([docs/adr/004](docs/adr/004-rooms-menu-as-a-native-popover.md) point 4).
+([docs/decisions/004](docs/decisions/004-rooms-menu-as-a-native-popover.md) point 4).
 The product view's selectors, under `:root[data-khe-view="product"]`, set
 only `display` on the mark, the rooms button and list, the slash and the
 demo line, and the title's size (estate ADR-035 point 11); the footer's hides the
@@ -222,9 +222,9 @@ not the KHE family's values. The dots are the room accents of khe-sites'
 sets the other family values from `DESIGN.md` on `.site-header`
 ([estate ADR-035](https://github.com/khelias/khe-architecture/blob/main/decisions/035-family-shell-and-design-check-with-its-exceptions.md)).
 
-The decisions behind this shape: [docs/adr/001](docs/adr/001-light-dom-markup-and-custom-properties.md)
+The decisions behind this shape: [docs/decisions/001](docs/decisions/001-light-dom-markup-and-custom-properties.md)
 and, for the rooms menu, the theme toggle and the footer,
-[docs/adr/004](docs/adr/004-rooms-menu-as-a-native-popover.md).
+[docs/decisions/004](docs/decisions/004-rooms-menu-as-a-native-popover.md).
 
 ## The design check
 
@@ -251,7 +251,7 @@ change is a minor release.
 
 ## Release
 
-[docs/adr/002](docs/adr/002-release-through-trusted-publishing.md). In
+[docs/decisions/002](docs/decisions/002-release-through-trusted-publishing.md). In
 short: bump `version` in `package.json` (0.x until all four apps run the
 package, then 1.0.0), commit, `git tag v<version>`, push the commit; the
 tag push stays with the operator, since it publishes and cannot be undone (estate

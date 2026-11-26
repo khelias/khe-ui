@@ -60,7 +60,7 @@ a version and moves to a new one in its own commit.
 
 - [docs/usage.md](docs/usage.md) - rendering the header and footer, the
   theme toggle, the demo line, theming and the design check
-- [docs/adr/](docs/adr/) - the package's design decisions
+- [docs/decisions/](docs/decisions/) - the package's design decisions
 - [AGENTS.md](AGENTS.md) - commands, layout, the markup contract, tokens and
   the release procedure
 

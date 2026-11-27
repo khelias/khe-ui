@@ -7,7 +7,8 @@ Workspace-wide rules (push, review, docs, estate ADRs) are in [khe-workspace
 toggle, and the site footer, each as CSS custom properties, an HTML-string
 renderer and a React component, plus framework-free theme, rooms and view
 modules, and the `khe-design-lint` bin, the family design check; shared
-by khe-sites, khe-study, khe-ai-adventure and khe-trips. Shared UI packages between app repos are
+by khe-sites, khe-study, khe-ai-adventure, khe-trips, khe-stories and
+khe-workshop. Shared UI packages between app repos are
 allowed by
 [estate ADR-014](https://github.com/khelias/khe-architecture/blob/main/decisions/014-shared-ui-packages.md):
 presentation only, released with semver, pinned in each app, and never
@@ -152,8 +153,8 @@ The footer, `footer.site-footer`:
 - `attrs` on `footer` and `nav`, and `attrs` on the home link, each link
   and line, under the same rules as the header's
 
-The class names are shared with khe-trips' `DESIGN.md` and khe-sites'
-`check.mjs`: renaming one breaks them. The rooms button and links are
+The class names are used in khe-trips' `src/styles.css` and `src/App.tsx`
+and in khe-sites' `check.mjs`: renaming one breaks them. The rooms button and links are
 named by `aria-label`, not visually hidden text: Chrome puts a space
 between flex and grid items, so hidden text would read "Kodu , Avaleht".
 

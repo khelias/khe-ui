@@ -21,8 +21,8 @@ const fixtures: Record<string, SiteHeaderOptions> = {
   'no rooms (landing)': base,
   'title only': { ...base, context: { title: 'Mängud' } },
   'rooms only': { ...base, rooms: games },
-  'rooms and a title': { ...base, rooms: games, context: { title: 'Tarkade Mängud' } },
-  'rooms and a linked title': { ...base, rooms: games, context: { title: 'Tarkade Mängud', href: '/study/?lang=et' } },
+  'rooms and a title': { ...base, rooms: games, context: { title: 'Tarkade mängud' } },
+  'rooms and a linked title': { ...base, rooms: games, context: { title: 'Tarkade mängud', href: '/study/?lang=et' } },
   'currentHref relative': { ...base, activeLocale: 'en', rooms: { current: 'trips', locale: 'en', currentHref: '/' }, context: { title: 'All trips' } },
   'no context, fixed, English': { ...base, activeLocale: 'en', fixed: true, rooms: { current: 'house', locale: 'en' } },
   'escaped text': {
@@ -53,7 +53,7 @@ const fixtures: Record<string, SiteHeaderOptions> = {
     demo: { label: 'Demo', note: 'Some stories.', link: { href: 'https://stories.khe.ee/?lang=en&x="1"', label: 'For family →' } },
     attrs: { demoLink: { 'data-i18n': 'headerDemoLink', 'data-link': 'family' } },
   },
-  'product without demo': { ...base, rooms: games, context: { title: 'Tarkade Mängud' }, product: { root: '/study/' } },
+  'product without demo': { ...base, rooms: games, context: { title: 'Tarkade mängud' }, product: { root: '/study/' } },
   'every attrs part': {
     ...base,
     themeToggle: { label: 'Dark "theme" & <more>' },
@@ -228,8 +228,8 @@ describe('renderSiteHeader', () => {
   });
 
   it('makes the title a link only with an href', () => {
-    expect(renderSiteHeader(fixtures['rooms and a title']!)).toContain('<strong class="site-header__title">Tarkade Mängud</strong>');
-    expect(renderSiteHeader(fixtures['rooms and a linked title']!)).toContain('<a class="site-header__title" href="/study/?lang=et">Tarkade Mängud</a>');
+    expect(renderSiteHeader(fixtures['rooms and a title']!)).toContain('<strong class="site-header__title">Tarkade mängud</strong>');
+    expect(renderSiteHeader(fixtures['rooms and a linked title']!)).toContain('<a class="site-header__title" href="/study/?lang=et">Tarkade mängud</a>');
   });
 
   it('puts the slash only between a room and a title, and draws no kicker', () => {
@@ -265,7 +265,7 @@ describe('renderSiteHeader', () => {
     expect(items.map((item) => item.getAttribute('aria-label'))).toEqual([
       'Kodu, Avaleht',
       'Koduautomaatika, Maja juhtimine, demo',
-      'Töökoda, Detailid, mida ise prindime',
+      'Töökoda, Detailid, mida ise kavandame ja prindime',
       'Jutud, Unejutud, ette loetud',
       'Reisipäevik, Reisid kaardil, demo',
       'Koduserver, Kuidas see kõik töötab',

@@ -27,7 +27,7 @@ export const ROOMS: readonly Room[] = [
   {
     id: 'workshop',
     name: { et: 'Töökoda', en: 'Workshop' },
-    note: { et: 'Detailid, mida ise prindime', en: 'Parts we design and print' },
+    note: { et: 'Detailid, mida ise kavandame ja prindime', en: 'Parts we design and print' },
     href: 'https://khe.ee/workshop/',
   },
   {
